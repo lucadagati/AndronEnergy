@@ -20,20 +20,20 @@ export class PodCrudOperations extends ContractExtension{
             {
             type:"pod",
             podId:"Pod1",
-            exchangedEnergy:[{"time":0,"energy":0}],
-            storedEnergy:[{"time":0,"energy":0}],
+            exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
+            storedEnergy:[{"time":0,"storedEnergy":0}],
             offgrid:'' },
 
             {type:"pod",
             podId:"Pod2",
-            exchangedEnergy:[{"time":0,"energy":0}],
-            storedEnergy:[{"time":0,"energy":0}],
+            exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
+            storedEnergy:[{"time":0,"storedEnergy":0}],
             offgrid:'' },
 
             {type:"pod",
             podId:"Pod3",
-            exchangedEnergy:[{"time":0,"energy":0}],
-            storedEnergy:[{"time":0,"energy":0}],
+            exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
+            storedEnergy:[{"time":0,"storedEnergy":0}],
             offgrid:'' }
         ];
         //const Comunity=new ComunityController(); 
@@ -53,20 +53,28 @@ export class PodCrudOperations extends ContractExtension{
 
     @Transaction(true)
     public async CreatePod(ctx:Context,param:string):Promise<Object>{
+        const comunityClass=new ComunityController();
         const params = JSON.parse(param);
-        const exist = await this.get(ctx,params.podId)as PodStruct;
-        if(exist.podId!=undefined){
-            throw new Error("The pod  with id:"+exist.podId+" already exists");
+        const pod_exist = await this.get(ctx,params.podId)as PodStruct;
+        const comunity_exist:any=await comunityClass.get(ctx,params.comunityId);
+
+        if(pod_exist.podId!=undefined){
+            throw new Error("The pod  with id:"+pod_exist.podId+" already exists");
             }
+        if(!comunity_exist){
+            throw new Error("The comunity  with id:"+comunity_exist.comunityId+" does not exists");
+        }
         const pod:PodStruct={
             type:"pod",
             podId:params.podId,
-            exchangedEnergy:[{"time":0,"energy":0}],
-            storedEnergy:[{"time":0,"energy":0}],
+            exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
+            storedEnergy:[{"time":0,"storedEnergy":0}],
             offgrid:'' ,
         };
+
         return Promise.all([
-        await ctx.stub.putState('pod'+'-'+pod.podId, Buffer.from(JSON.stringify(sortKeysRecursive(pod))))
+        await ctx.stub.putState('pod'+'-'+pod.podId, Buffer.from(JSON.stringify(sortKeysRecursive(pod)))),
+        comunityClass.addPodToComunity(ctx,params.podId,params.comunityId)
         ]).then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});
     }
 
@@ -85,7 +93,7 @@ export class PodCrudOperations extends ContractExtension{
                 storedEnergy:exist.storedEnergy,
                 offgrid:exist.offgrid
             };*/
-        const pod=this.generatePodObj(id,[...exist.exchangedEnergy,{"time":params.time,"energy":params.storedEnergy}],exist.storedEnergy,exist.offgrid)
+        const pod=this.generatePodObj(id,[...exist.exchangedEnergy,{"time":params.time,"exchangedEnergy":params.storedEnergy}],exist.storedEnergy,exist.offgrid)
 
         //exist.exchangedEnergy=exist.exchangedEnergy.push(params.exchangedEnergy)
         return Promise.all([
@@ -109,7 +117,7 @@ export class PodCrudOperations extends ContractExtension{
             storedEnergy:[...exist.storedEnergy,{"time":params.time,"energy":params.storedEnergy}],
             offgrid:exist.offgrid
         };*/
-        const pod=this.generatePodObj(id,exist.exchangedEnergy,[...exist.storedEnergy,{"time":params.time,"energy":params.storedEnergy}],exist.offgrid)
+        const pod=this.generatePodObj(id,exist.exchangedEnergy,[...exist.storedEnergy,{"time":params.time,"storedEnergy":params.storedEnergy}],exist.offgrid)
         //exist.storedEnergy=exist.storedEnergy.push(params.storedEnergy)
         return Promise.all([
              await ctx.stub.putState('pod-'+exist.podId,Buffer.from(JSON.stringify(pod)))
@@ -137,7 +145,7 @@ export class PodCrudOperations extends ContractExtension{
            ]).then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});;
         }    
     @Transaction(false)
-    private generatePodObj(id:string,exchangedEnergy:{"time":number,"energy":number}[],storedEnergy:{"time":number,"energy":number}[],offgrid:string){
+    private generatePodObj(id:string,exchangedEnergy:{"time":number,"exchangedEnergy":number}[],storedEnergy:{"time":number,"storedEnergy":number}[],offgrid:string){
          const pod={
             type:'pod',
             podId:id,

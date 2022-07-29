@@ -8,12 +8,12 @@ export class PodStruct{
     @Property()
     public podId:string;
     @Property()
-    public exchangedEnergy:{"time":number,"energy":number}[];
+    public exchangedEnergy:{"time":number,"exchangedEnergy":number}[];
     @Property()
-    public storedEnergy:{"time":number,"energy":number}[];
+    public storedEnergy:{"time":number,"storedEnergy":number}[];
     @Property()
     public  offgrid:string;
-    constructor(podId:string,exchangedEnergy:{"time":number,"energy":number}[],storedEnergy:{"time":number,"energy":number}[],offgrid:string){
+    constructor(podId:string,exchangedEnergy:{"time":number,"exchangedEnergy":number}[],storedEnergy:{"time":number,"storedEnergy":number}[],offgrid:string){
         this.podId=podId;
         this.offgrid=offgrid;
         this.exchangedEnergy=exchangedEnergy;

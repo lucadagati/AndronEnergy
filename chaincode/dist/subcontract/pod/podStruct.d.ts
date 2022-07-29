@@ -3,18 +3,18 @@ export declare class PodStruct {
     podId: string;
     exchangedEnergy: {
         "time": number;
-        "energy": number;
+        "exchangedEnergy": number;
     }[];
     storedEnergy: {
         "time": number;
-        "energy": number;
+        "storedEnergy": number;
     }[];
     offgrid: string;
     constructor(podId: string, exchangedEnergy: {
         "time": number;
-        "energy": number;
+        "exchangedEnergy": number;
     }[], storedEnergy: {
         "time": number;
-        "energy": number;
+        "storedEnergy": number;
     }[], offgrid: string);
 }

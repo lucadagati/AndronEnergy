@@ -1,11 +1,15 @@
 export async function add_elem(type,obj){
     const request={
         method:'POST',
-        headers: { 'Content-Type': 'application/json',"Access-Control-Allow-Origin": "*"},
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            "Access-Control-Allow-Origin": "*"
+          },
         body:JSON.stringify(obj)
         };
-    const call=fetch(`http:://localhost:8060/${type}Op/Add`,request);
-    const body=call.json();
+    const call=await fetch(`http://localhost:8060/${type}Op/Add`,request);
+    const body=await call.json();
     if(call.status!==200){
         throw Error(body.message)
         }

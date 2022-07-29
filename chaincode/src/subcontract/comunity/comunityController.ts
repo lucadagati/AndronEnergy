@@ -53,15 +53,33 @@ export class ComunityController extends ContractExtension{
     }
 
     @Transaction()
+    public async addPodToComunity(ctx:Context,podId:string,comunityId:string):Promise<Object> {
+        const pod=new PodCrudOperations();
+        const comunity:any=await this.get(ctx,comunityId);
+        const exist=await pod.get(ctx,podId);
+        let podList=comunity.podList.filter((elem:String)=>elem==podId)
+        if(podList.length!=0){
+            throw new Error(`The pod ${podId}  altready exist in the comunity`);
+        }
+        if(!exist){
+            throw new Error(`The pod ${podId}  does not exist`);
+        }
+        comunity.podList=[...comunity.podList,podId];
+        return Promise.all([
+            await ctx.stub.putState('comunity-'+comunity.comunityId,Buffer.from(JSON.stringify(comunity)))
+           ]).then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});        
+    }
+
+    @Transaction()
     public async DeletePodFromComunity(ctx:Context,podId:string,comunityId:string):Promise<Object>{
         const pod=new PodCrudOperations();
         const exist=await pod.get(ctx,podId);
         const comunity:any=await this.get(ctx,comunityId);
-        if(!exist){
+        let podList=comunity.podList.filter((elem:String)=>elem==podId)
+        if(!exist || podList.length===0){
             throw new Error(`The pod ${podId}  does not exist in the comunity`);
         }
         comunity.podList=comunity.podList.filter((elem:String)=>elem!=podId)
-
         return Promise.all([
             await ctx.stub.putState('comunity-'+comunity.comunityId,Buffer.from(JSON.stringify(comunity)))
            ]).then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});

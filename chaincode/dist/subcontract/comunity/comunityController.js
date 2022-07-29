@@ -55,11 +55,28 @@ let ComunityController = class ComunityController extends contractExtension_1.Co
             await ctx.stub.deleteState('comunity-' + id)
         ]).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
+    async addPodToComunity(ctx, podId, comunityId) {
+        const pod = new podController_1.PodCrudOperations();
+        const comunity = await this.get(ctx, comunityId);
+        const exist = await pod.get(ctx, podId);
+        let podList = comunity.podList.filter((elem) => elem == podId);
+        if (podList.length != 0) {
+            throw new Error(`The pod ${podId}  altready exist in the comunity`);
+        }
+        if (!exist) {
+            throw new Error(`The pod ${podId}  does not exist`);
+        }
+        comunity.podList = [...comunity.podList, podId];
+        return Promise.all([
+            await ctx.stub.putState('comunity-' + comunity.comunityId, Buffer.from(JSON.stringify(comunity)))
+        ]).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
+    }
     async DeletePodFromComunity(ctx, podId, comunityId) {
         const pod = new podController_1.PodCrudOperations();
         const exist = await pod.get(ctx, podId);
         const comunity = await this.get(ctx, comunityId);
-        if (!exist) {
+        let podList = comunity.podList.filter((elem) => elem == podId);
+        if (!exist || podList.length === 0) {
             throw new Error(`The pod ${podId}  does not exist in the comunity`);
         }
         comunity.podList = comunity.podList.filter((elem) => elem != podId);
@@ -86,6 +103,12 @@ __decorate([
     __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
     __metadata("design:returntype", Promise)
 ], ComunityController.prototype, "DeleteComunity", null);
+__decorate([
+    fabric_contract_api_1.Transaction(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [fabric_contract_api_1.Context, String, String]),
+    __metadata("design:returntype", Promise)
+], ComunityController.prototype, "addPodToComunity", null);
 __decorate([
     fabric_contract_api_1.Transaction(),
     __metadata("design:type", Function),

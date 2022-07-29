@@ -22,7 +22,10 @@ router.post('/Add',gatewayConnectionTetstChain,async(req,res)=>{
     try {
         console.log(JSON.stringify(req.body));
         let result= JSON.parse(Buffer.from(await contract.submitTransaction("pod:CreatePod",JSON.stringify(req.body))).toString())
-        res.status(result.status==="error" ? 400 : 200).json(result);
+        res.status(200).json({
+            status : 200,
+            message : result
+        });
     } 
     catch (error) {
         console.error(`Failed to evaluate transaction: ${error}`);

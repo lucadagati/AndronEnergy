@@ -1,16 +1,27 @@
-import { useEffect } from "react";
-import { get_data } from "../../api_call/get_api";
+import { useEffect, useState } from "react";
+import './show_info.css';
+import PlotData from "../plot/plot";
 
-function Show_info(){
+function ShowInfo(props){
 
-
+    const [rendering,setRendering]=useState();
     useEffect(()=>{
+        if(props.type==='pod'){
+            setRendering(()=><PlotData elem={props.elem}/>)
+        }
+        else if(props.type==='comunity'){
+            setRendering(()=><div></div>)
+        }
+    },[props.type,props.elem])
 
-    },[])
 
+    return (
 
-    return 
+        <div style={{ "backgroundColor": "#f8f9fa"}}>
+            {rendering}
+        </div>
+        )
 }
 
 
-export default Show_info;
+export default ShowInfo;

@@ -28,19 +28,19 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
             {
                 type: "pod",
                 podId: "Pod1",
-                exchangedEnergy: [{ "time": 0, "energy": 0 }],
-                storedEnergy: [{ "time": 0, "energy": 0 }],
+                exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
+                storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
                 offgrid: ''
             },
             { type: "pod",
                 podId: "Pod2",
-                exchangedEnergy: [{ "time": 0, "energy": 0 }],
-                storedEnergy: [{ "time": 0, "energy": 0 }],
+                exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
+                storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
                 offgrid: '' },
             { type: "pod",
                 podId: "Pod3",
-                exchangedEnergy: [{ "time": 0, "energy": 0 }],
-                storedEnergy: [{ "time": 0, "energy": 0 }],
+                exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
+                storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
                 offgrid: '' }
         ];
         //const Comunity=new ComunityController(); 
@@ -58,20 +58,26 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
         ctx.stub.putState('comunity-' + comunity.comunityId, Buffer.from(JSON.stringify(sort_keys_recursive_1.default(comunity))));
     }
     async CreatePod(ctx, param) {
+        const comunityClass = new comunityController_1.ComunityController();
         const params = JSON.parse(param);
-        const exist = await this.get(ctx, params.podId);
-        if (exist.podId != undefined) {
-            throw new Error("The pod  with id:" + exist.podId + " already exists");
+        const pod_exist = await this.get(ctx, params.podId);
+        const comunity_exist = await comunityClass.get(ctx, params.comunityId);
+        if (pod_exist.podId != undefined) {
+            throw new Error("The pod  with id:" + pod_exist.podId + " already exists");
+        }
+        if (!comunity_exist) {
+            throw new Error("The comunity  with id:" + comunity_exist.comunityId + " does not exists");
         }
         const pod = {
             type: "pod",
             podId: params.podId,
-            exchangedEnergy: [{ "time": 0, "energy": 0 }],
-            storedEnergy: [{ "time": 0, "energy": 0 }],
+            exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
+            storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
             offgrid: '',
         };
         return Promise.all([
-            await ctx.stub.putState('pod' + '-' + pod.podId, Buffer.from(JSON.stringify(sort_keys_recursive_1.default(pod))))
+            await ctx.stub.putState('pod' + '-' + pod.podId, Buffer.from(JSON.stringify(sort_keys_recursive_1.default(pod)))),
+            comunityClass.addPodToComunity(ctx, params.podId, params.comunityId)
         ]).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
     async updateExchangedEnergy(ctx, id, param) {
@@ -87,7 +93,7 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
                  storedEnergy:exist.storedEnergy,
                  offgrid:exist.offgrid
              };*/
-        const pod = this.generatePodObj(id, [...exist.exchangedEnergy, { "time": params.time, "energy": params.storedEnergy }], exist.storedEnergy, exist.offgrid);
+        const pod = this.generatePodObj(id, [...exist.exchangedEnergy, { "time": params.time, "exchangedEnergy": params.storedEnergy }], exist.storedEnergy, exist.offgrid);
         //exist.exchangedEnergy=exist.exchangedEnergy.push(params.exchangedEnergy)
         return Promise.all([
             await ctx.stub.putState('pod-' + exist.podId, Buffer.from(JSON.stringify(pod)))
@@ -106,7 +112,7 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
             storedEnergy:[...exist.storedEnergy,{"time":params.time,"energy":params.storedEnergy}],
             offgrid:exist.offgrid
         };*/
-        const pod = this.generatePodObj(id, exist.exchangedEnergy, [...exist.storedEnergy, { "time": params.time, "energy": params.storedEnergy }], exist.offgrid);
+        const pod = this.generatePodObj(id, exist.exchangedEnergy, [...exist.storedEnergy, { "time": params.time, "storedEnergy": params.storedEnergy }], exist.offgrid);
         //exist.storedEnergy=exist.storedEnergy.push(params.storedEnergy)
         return Promise.all([
             await ctx.stub.putState('pod-' + exist.podId, Buffer.from(JSON.stringify(pod)))

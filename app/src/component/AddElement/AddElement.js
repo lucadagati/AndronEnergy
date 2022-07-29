@@ -1,45 +1,70 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { add_elem } from '../../api_call/post_api';
+//import { add_elem } from '../../api_call/post_api';
+import { text_control,select_control } from '../../functions/formControl';
 
 
 function AddElement(props){
     const [elem,setElem]=useState('');
+    const [comunity,setComunity]=useState();
     const [error,setError]=useState(false);
-
+    const [error2,setError2]=useState(false);
+    const [comunities,setComunities]=useState();
 
     const add=async()=>{
         props.result_fun(()=>undefined);
-        let body={"podId":elem};
-        add_elem(props.type,body)
-            .then((res)=>{
-                if(res)
-                    window.location.reload()
-                });
+       /* let body={}
+
+        if (props.type==='pod'){
+             body={
+                "podId":elem,
+                "comunityId":comunity
+            };
+        }
+        else if(props.type==='comunity'){
+            body={
+                "comunityId":comunity
+            };
+        }*/
+        /*add_elem(props.type,body).then((res)=>{
+            if(res)
+                window.location.reload();
+            })*/
+
     }
 
-    const handleSubmit=(event)=>{
-        setElem(()=>elem.charAt(0).toUpperCase() + elem.slice(1));
-        event.preventDefault();
-        let control=/[.,/#!$%^&*;:{}=\-_`'"~()\s]/g;
-        let char_check=/[a-zA-Z]/g;
-        let res1=elem.match(control);
-        let res2=elem.match(char_check);
-        
-        if(!elem){
-            setError(()=>"Devi inserire un nome identificativo");
+    
+    useEffect(()=>{
+        if(props.comunities){
+            const selection=()=>{
+                let comunities=props.comunities.map((val)=>{
+                    return <option key={val} value={val}>{val}</option>
+                });
+                setComunities(()=>comunities);    
+            }
+            selection();
         }
-        else if(res1){
-            setError(()=>"Puoi inserire solo lettere e numeri");
+    },[props.comunities])
 
+    const handleSubmit=(event)=>{
+        event.preventDefault();
+        if(elem){
+            setElem(()=>elem.charAt(0).toUpperCase() + elem.slice(1));
         }
-        else if(!res2){
-            setError(()=>"Devi inserire delle lettere");
+        let res1=text_control(elem);
+        let res2=select_control(comunity);
+        if(res1.length>0){
+            setError(()=>res1);
+            return
         }
-        else{
-            add();
+        if(res2.length>0){
+            setError(()=>res2)
+            return
         }
+
+        add();
+        
 
 
     }
@@ -49,9 +74,22 @@ function AddElement(props){
             <Form.Group className="mb-3" controlId="formBasicId">
             <Form.Label>{props.type} Id</Form.Label>
             <Form.Control type="text"style={{ fontSize: 12, padding: 6,width:"100%" }} placeholder="Nome" 
-                onChange={(event)=>setElem(()=>event.target.value)} value={elem}/>
+                onChange={(event)=>{setError('');setElem(()=>event.target.value)}} value={elem}/>
+            <p style={{color:"red"}}>{error}</p>    
             </Form.Group>
-            <p>{error}</p>            
+            {
+            props.type==='pod' && comunities && 
+                (
+                <Form.Group>
+                <Form.Label>Comunità</Form.Label>
+                <Form.Select aria-label="comunities" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError2("");setComunity(()=>event.target.value)}} className="mb-3">
+                    <option value="Seleziona">Seleziona</option>
+                    {comunities}
+                </Form.Select>
+                <p style={{color:"red"}}>{error2}</p>    
+                </Form.Group>
+                )
+            } 
             <Button variant="primary" style={{"float":"right"}} className="btn btn-sm btn-primary btn-rounded"type="submit" value="Submit">
             Aggiungi
             </Button>
