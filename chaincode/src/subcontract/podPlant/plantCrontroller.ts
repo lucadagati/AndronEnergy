@@ -18,14 +18,10 @@ export class PlantOperations extends ContractExtension{
         if(exist.plantId){
             throw new Error("The palnt with id:"+params.podId+" already exists");
             }
-        const podData:PodStruct=await this.getAsset(ctx,"pod",params.podId)as PodStruct;
-        if(podData.podId==undefined)
-            throw new Error("The pod with id:"+params.podId+" does not exists");
-
         const plant= {
             type:'plant',
             plantId:params.plantId,
-            podId:params.podId,
+            podId:[],
             generatedEnergy:[{"time":0,"consumption":0}],
             };
         return  Promise.all([await ctx.stub.putState(plant.type+"-"+plant.plantId,Buffer.from(JSON.stringify(plant)))])

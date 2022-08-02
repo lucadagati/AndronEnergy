@@ -29,7 +29,7 @@ __decorate([
 ], PlantStruct.prototype, "plantId", void 0);
 __decorate([
     fabric_contract_api_1.Property(),
-    __metadata("design:type", String)
+    __metadata("design:type", Array)
 ], PlantStruct.prototype, "podId", void 0);
 __decorate([
     fabric_contract_api_1.Property(),
@@ -37,7 +37,7 @@ __decorate([
 ], PlantStruct.prototype, "generatedEnergy", void 0);
 PlantStruct = __decorate([
     fabric_contract_api_1.Object(),
-    __metadata("design:paramtypes", [String, String, Array])
+    __metadata("design:paramtypes", [String, Array, Array])
 ], PlantStruct);
 exports.PlantStruct = PlantStruct;
 //# sourceMappingURL=plantStruct.js.map

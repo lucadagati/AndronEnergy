@@ -23,19 +23,27 @@ let UserConsumptionsOperations = class UserConsumptionsOperations extends contra
         const consumption = {
             type: 'userConsumption',
             walletId: params.walletId,
+            podId: params.podId,
             consumption: [{ "time": 0, "consumption": 0 }],
         };
-        return Promise.all([await ctx.stub.putState(consumption.type + "-" + consumption.walletId, Buffer.from(JSON.stringify(consumption)))])
+        return Promise.all([
+            await ctx.stub.putState(consumption.type + "-" + consumption.walletId, Buffer.from(JSON.stringify(consumption)))
+        ])
             .then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
     async AddConsumption(ctx, id, param) {
         const params = JSON.parse(param);
+        const pod_exist = await this.get(ctx, 'pod' + '-' + params.podId);
         const exist = await this.get(ctx, id);
         if (exist.walletId == undefined) {
             throw new Error("The user with wallet id:" + id + " does not exists");
         }
+        if (!pod_exist) {
+            throw new Error("The pod with id:" + id + " does not exists");
+        }
         const consumption = {
             type: 'userConsumption',
+            podId: params.podId,
             walletId: id,
             consumption: [...exist.consumption, { "time": params.time, "consumption": params.consumption }],
         };

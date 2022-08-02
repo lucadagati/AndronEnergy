@@ -13,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/pod" element={<ShowElement type="pod"/>}></Route>
           <Route path="/comunity" element={<ShowElement type="comunity"/>}></Route>
+          <Route path="/plant" element={<ShowElement type="plant"/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>

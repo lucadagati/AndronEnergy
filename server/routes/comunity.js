@@ -34,7 +34,9 @@ router.post('/Add',gatewayConnectionTetstChain,async(req,res)=>{
 
 
 router.post('/Delete/:comunityId',gatewayConnectionTetstChain,async(req,res)=>{
+    
     try {
+        res.set('Access-Control-Allow-Origin', '*');
         let id=req.params.comunityId
         console.log('');
         let result= JSON.parse(Buffer.from(await contract.submitTransaction("comunity:DeleteComunity",id)).toString())
