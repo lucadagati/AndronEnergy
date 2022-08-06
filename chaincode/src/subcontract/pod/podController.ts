@@ -1,7 +1,6 @@
 import { PlantOperations } from './../podPlant/plantCrontroller';
 import { Status } from '../../utility/asset';
 import { Context,Info,Transaction } from "fabric-contract-api";
-import sortKeysRecursive from "sort-keys-recursive";
 import { PodStruct } from "./podStruct";
 import { ContractExtension } from '../../utility/contractExtension';
 import { ComunityController } from '../comunity/comunityController';
@@ -19,73 +18,76 @@ export class PodCrudOperations extends ContractExtension{
         const pod:PodStruct[]=
         [
             {
-            type:"pod",
             podId:"Pod1",
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
+            type:"pod",
             offgrid:'' },
 
-            {type:"pod",
+            {
             podId:"Pod2",
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
+            type:"pod",
             offgrid:'' },
 
-            {type:"pod",
+            {
             podId:"Pod3",
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
+            type:"pod",
             offgrid:'' },
-            {type:"pod",
+            {
             podId:"Pod4",
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
+            type:"pod",
             offgrid:'' }
         ];
        // const Comunity=new ComunityController(); 
        // const plant=new PlantOperations();
 
         const comunity={
-            type:"comunity",
             comunityId:"Comunity1",
             podList:['Pod1','Pod2','Pod3','Pod4'],
+            type:"comunity",
             }
         const plant1={
-            type:"plant",
             plantId:"Plant1",
             podId:["Pod1","Pod2"],
             generatedEnergy:[{"time":0,"generatedEnergy":0}],
+            type:"plant",
         }
         const plant2={
-            type:"plant",
             plantId:"Plant2",
             podId:["Pod3","Pod4"],
             generatedEnergy:[{"time":0,"generatedEnergy":0}],
+            type:"plant"
         }
 
         const user1={
-            type:"userConsumption",
-            walletId:"User1",
+            userConsumptionId:"User1",
             podId:"Pod1",
-            consumption:[{"time":0,"generatedEnergy":0}]
+            consumption:[{"time":0,"EnergyConsumption":0}],
+            type:"userConsumption"
         }
         const user2={
-            type:'userConsumption',
-            walletId:"User2",
+            userConsumptionId:"User2",
             podId:"Pod1",
-            consumption:[{"time":0,"generatedEnergy":0}]
+            consumption:[{"time":0,"EnergyConsumption":0}],
+            type:"userConsumption",
         }
         for (const asset of pod){
-            await ctx.stub.putState('pod'+'-'+asset.podId, Buffer.from(JSON.stringify(sortKeysRecursive(asset))))
+            await ctx.stub.putState('pod'+'-'+asset.podId, Buffer.from(JSON.stringify(asset)))
             .then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});
             console.log(`Asset ${asset.podId} initialized`);
         }
         //await Comunity.CreateComunity(ctx,`{type:"comunity",comunityId:"Comunity1",podList:['Pod1','Pod2','Pod3']}`)
-        await ctx.stub.putState('comunity-'+comunity.comunityId,Buffer.from(JSON.stringify(sortKeysRecursive(comunity))))
-        await ctx.stub.putState('plant-'+plant1.plantId,Buffer.from(JSON.stringify(sortKeysRecursive(plant1))));
-        await ctx.stub.putState('plant-'+plant2.plantId,Buffer.from(JSON.stringify(sortKeysRecursive(plant2))));
-        await ctx.stub.putState('userConsumption-'+user1.walletId,Buffer.from(JSON.stringify(sortKeysRecursive(user1))));
-        await ctx.stub.putState('userConsumption-'+user2.walletId,Buffer.from(JSON.stringify(sortKeysRecursive(user2))));
+        await ctx.stub.putState('comunity-'+comunity.comunityId,Buffer.from(JSON.stringify(comunity)))
+        await ctx.stub.putState('plant-'+plant1.plantId,Buffer.from(JSON.stringify(plant1)));
+        await ctx.stub.putState('plant-'+plant2.plantId,Buffer.from(JSON.stringify(plant2)));
+        await ctx.stub.putState('userConsumption-'+user1.userConsumptionId,Buffer.from(JSON.stringify(user1)));
+        await ctx.stub.putState('userConsumption-'+user2.userConsumptionId,Buffer.from(JSON.stringify(user2)));
 
     }
 
@@ -111,7 +113,7 @@ export class PodCrudOperations extends ContractExtension{
         };
 
         return Promise.all([
-        await ctx.stub.putState('pod'+'-'+pod.podId, Buffer.from(JSON.stringify(sortKeysRecursive(pod)))),
+        await ctx.stub.putState('pod'+'-'+pod.podId, Buffer.from(JSON.stringify(pod))),
         comunityClass.addPodToComunity(ctx,params.podId,params.comunityId)
         ]).then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});
     }
@@ -185,10 +187,10 @@ export class PodCrudOperations extends ContractExtension{
     @Transaction(false)
     private generatePodObj(id:string,exchangedEnergy:{"time":number,"exchangedEnergy":number}[],storedEnergy:{"time":number,"storedEnergy":number}[],offgrid:string){
          const pod={
-            type:'pod',
             podId:id,
             exchangedEnergy:exchangedEnergy,
             storedEnergy:storedEnergy,
+            type:'pod',
             offgrid:offgrid,
         };
         return pod;

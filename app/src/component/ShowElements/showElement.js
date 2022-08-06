@@ -16,8 +16,8 @@ export default function ShowElement(props){
     // eslint-disable-next-line
     const [data,setData]=useState();
     const[comunities,setComunities]=useState();
+    const [plants,setPlants]=useState()
     const [render,setRender]=useState(true);
-
 
     const set_data=(val)=>{
 
@@ -26,33 +26,42 @@ export default function ShowElement(props){
         setRender(()=>false); 
         //console.log(val)
         let res=formatData(val);
+        //console.log(res)
         setData(()=>res)
             
     }
 
+    const request=(async()=>{
+        let prova=''; 
+        prova=await get(['comunity','plant'])
+        let list=prova[0].data.message.map((val)=>val.comunityId)
+        setComunities(()=>list);
+        list=prova[1].data.message.map((val)=>val.plantId)
+        console.log(list);
+        setPlants(()=>list)
+        get_table(props.type,setTable,set_data);  
+            
+            
+    })
+
     useEffect(()=>{
-           if(props.type==='pod'){
-            get("comunity").then((res)=>{
-                if(res){
-                    let list=res.message.map((val)=>val.comunityId)
-                    setComunities(()=>list);
-                    get_table(props.type,setTable,set_data);                    
-                    }
-                });
+           if(props.type==='pod'){   
+                request(); 
+                
            }
             else{
                 get_table(props.type,setTable,set_data);
             }
 
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[props])
 
     return (
         
         table?(<div className="showElement">
-                <h3 style={{textAlign:"center",fontWeight:"300","fontSize": "2.5rem"}}>{props.type.toUpperCase()}</h3>
+                <h3 style={{textAlign:"center",fontWeight:"300","fontSize": "2.5rem"}}>{props.type.replace(/([A-Z])/g, ' $1').trim().toUpperCase()}</h3>
                 {render&&<RenderList type={props.type}  funAdd={setAdd} add={add} info={info} result={table} />}
-                {add&&(<AddElement type={props.type} result_fun={setTable} comunities={comunities} />)}
+                {add&&(<AddElement type={props.type} result_fun={setTable} comunities={comunities} plants={plants}/>)}
                 {info&&<ShowInfo elem={data} type={props.type} info={info}/>}    
                 </div>)
                 :

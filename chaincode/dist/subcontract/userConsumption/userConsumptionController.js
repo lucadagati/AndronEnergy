@@ -21,13 +21,13 @@ let UserConsumptionsOperations = class UserConsumptionsOperations extends contra
     async GenerateConsumption(ctx, param) {
         const params = JSON.parse(param);
         const consumption = {
-            type: 'userConsumption',
-            walletId: params.walletId,
+            userConsumptionId: params.userConsumptionId,
             podId: params.podId,
             consumption: [{ "time": 0, "consumption": 0 }],
+            type: 'userConsumption',
         };
         return Promise.all([
-            await ctx.stub.putState(consumption.type + "-" + consumption.walletId, Buffer.from(JSON.stringify(consumption)))
+            await ctx.stub.putState(consumption.type + "-" + consumption.userConsumptionId, Buffer.from(JSON.stringify(consumption)))
         ])
             .then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
@@ -35,19 +35,19 @@ let UserConsumptionsOperations = class UserConsumptionsOperations extends contra
         const params = JSON.parse(param);
         const pod_exist = await this.get(ctx, 'pod' + '-' + params.podId);
         const exist = await this.get(ctx, id);
-        if (exist.walletId == undefined) {
+        if (exist.userConsumptionId == undefined) {
             throw new Error("The user with wallet id:" + id + " does not exists");
         }
         if (!pod_exist) {
             throw new Error("The pod with id:" + id + " does not exists");
         }
         const consumption = {
-            type: 'userConsumption',
+            userConsumptionId: id,
             podId: params.podId,
-            walletId: id,
             consumption: [...exist.consumption, { "time": params.time, "consumption": params.consumption }],
+            type: 'userConsumption',
         };
-        return Promise.all([await ctx.stub.putState(consumption.type + "-" + consumption.walletId, Buffer.from(JSON.stringify(consumption)))])
+        return Promise.all([await ctx.stub.putState(consumption.type + "-" + consumption.userConsumptionId, Buffer.from(JSON.stringify(consumption)))])
             .then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
 };

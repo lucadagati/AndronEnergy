@@ -1,4 +1,3 @@
-import { PodStruct } from '../pod/podStruct';
 import { Context,Info,Returns,Transaction } from "fabric-contract-api";
 import { ContractExtension } from '../../utility/contractExtension';
 import { PlantStruct } from "./plantStruct";
@@ -19,10 +18,10 @@ export class PlantOperations extends ContractExtension{
             throw new Error("The palnt with id:"+params.podId+" already exists");
             }
         const plant= {
-            type:'plant',
             plantId:params.plantId,
             podId:[],
             generatedEnergy:[{"time":0,"consumption":0}],
+            type:'plant',
             };
         return  Promise.all([await ctx.stub.putState(plant.type+"-"+plant.plantId,Buffer.from(JSON.stringify(plant)))])
             .then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});

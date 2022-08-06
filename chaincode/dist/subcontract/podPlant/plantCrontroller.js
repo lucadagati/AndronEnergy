@@ -25,10 +25,10 @@ let PlantOperations = class PlantOperations extends contractExtension_1.Contract
             throw new Error("The palnt with id:" + params.podId + " already exists");
         }
         const plant = {
-            type: 'plant',
             plantId: params.plantId,
             podId: [],
             generatedEnergy: [{ "time": 0, "consumption": 0 }],
+            type: 'plant',
         };
         return Promise.all([await ctx.stub.putState(plant.type + "-" + plant.plantId, Buffer.from(JSON.stringify(plant)))])
             .then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });

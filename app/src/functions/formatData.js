@@ -1,5 +1,4 @@
 export function formatData(val){
-    console.log("Format",val)
     let res=Object.values(val);
     res=res.map((val,key)=>{
         if(typeof(val)==="object"){
@@ -18,4 +17,11 @@ export function formatData(val){
         else return val;  
     })
     return res;
+}
+
+
+export function capitalize(data){
+    
+    const str2 = data.charAt(0).toUpperCase() + data.slice(1);
+    return str2;
 }

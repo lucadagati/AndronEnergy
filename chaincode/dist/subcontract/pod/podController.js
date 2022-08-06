@@ -8,14 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PodCrudOperations = void 0;
 const asset_1 = require("../../utility/asset");
 const fabric_contract_api_1 = require("fabric-contract-api");
-const sort_keys_recursive_1 = __importDefault(require("sort-keys-recursive"));
 const contractExtension_1 = require("../../utility/contractExtension");
 const comunityController_1 = require("../comunity/comunityController");
 let PodCrudOperations = class PodCrudOperations extends contractExtension_1.ContractExtension {
@@ -26,70 +22,76 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
     async InitLedger(ctx) {
         const pod = [
             {
-                type: "pod",
                 podId: "Pod1",
                 exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
                 storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
+                type: "pod",
                 offgrid: ''
             },
-            { type: "pod",
+            {
                 podId: "Pod2",
                 exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
                 storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
-                offgrid: '' },
-            { type: "pod",
+                type: "pod",
+                offgrid: ''
+            },
+            {
                 podId: "Pod3",
                 exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
                 storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
-                offgrid: '' },
-            { type: "pod",
+                type: "pod",
+                offgrid: ''
+            },
+            {
                 podId: "Pod4",
                 exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
                 storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
-                offgrid: '' }
+                type: "pod",
+                offgrid: ''
+            }
         ];
         // const Comunity=new ComunityController(); 
         // const plant=new PlantOperations();
         const comunity = {
-            type: "comunity",
             comunityId: "Comunity1",
             podList: ['Pod1', 'Pod2', 'Pod3', 'Pod4'],
+            type: "comunity",
         };
         const plant1 = {
-            type: "plant",
             plantId: "Plant1",
             podId: ["Pod1", "Pod2"],
             generatedEnergy: [{ "time": 0, "generatedEnergy": 0 }],
+            type: "plant",
         };
         const plant2 = {
-            type: "plant",
             plantId: "Plant2",
             podId: ["Pod3", "Pod4"],
             generatedEnergy: [{ "time": 0, "generatedEnergy": 0 }],
+            type: "plant"
         };
         const user1 = {
-            type: "userConsumption",
-            walletId: "User1",
+            userConsumptionId: "User1",
             podId: "Pod1",
-            consumption: [{ "time": 0, "generatedEnergy": 0 }]
+            consumption: [{ "time": 0, "EnergyConsumption": 0 }],
+            type: "userConsumption"
         };
         const user2 = {
-            type: 'userConsumption',
-            walletId: "User2",
+            userConsumptionId: "User2",
             podId: "Pod1",
-            consumption: [{ "time": 0, "generatedEnergy": 0 }]
+            consumption: [{ "time": 0, "EnergyConsumption": 0 }],
+            type: "userConsumption",
         };
         for (const asset of pod) {
-            await ctx.stub.putState('pod' + '-' + asset.podId, Buffer.from(JSON.stringify(sort_keys_recursive_1.default(asset))))
+            await ctx.stub.putState('pod' + '-' + asset.podId, Buffer.from(JSON.stringify(asset)))
                 .then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
             console.log(`Asset ${asset.podId} initialized`);
         }
         //await Comunity.CreateComunity(ctx,`{type:"comunity",comunityId:"Comunity1",podList:['Pod1','Pod2','Pod3']}`)
-        await ctx.stub.putState('comunity-' + comunity.comunityId, Buffer.from(JSON.stringify(sort_keys_recursive_1.default(comunity))));
-        await ctx.stub.putState('plant-' + plant1.plantId, Buffer.from(JSON.stringify(sort_keys_recursive_1.default(plant1))));
-        await ctx.stub.putState('plant-' + plant2.plantId, Buffer.from(JSON.stringify(sort_keys_recursive_1.default(plant2))));
-        await ctx.stub.putState('userConsumption-' + user1.walletId, Buffer.from(JSON.stringify(sort_keys_recursive_1.default(user1))));
-        await ctx.stub.putState('userConsumption-' + user2.walletId, Buffer.from(JSON.stringify(sort_keys_recursive_1.default(user2))));
+        await ctx.stub.putState('comunity-' + comunity.comunityId, Buffer.from(JSON.stringify(comunity)));
+        await ctx.stub.putState('plant-' + plant1.plantId, Buffer.from(JSON.stringify(plant1)));
+        await ctx.stub.putState('plant-' + plant2.plantId, Buffer.from(JSON.stringify(plant2)));
+        await ctx.stub.putState('userConsumption-' + user1.userConsumptionId, Buffer.from(JSON.stringify(user1)));
+        await ctx.stub.putState('userConsumption-' + user2.userConsumptionId, Buffer.from(JSON.stringify(user2)));
     }
     async CreatePod(ctx, param) {
         const comunityClass = new comunityController_1.ComunityController();
@@ -110,7 +112,7 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
             offgrid: '',
         };
         return Promise.all([
-            await ctx.stub.putState('pod' + '-' + pod.podId, Buffer.from(JSON.stringify(sort_keys_recursive_1.default(pod)))),
+            await ctx.stub.putState('pod' + '-' + pod.podId, Buffer.from(JSON.stringify(pod))),
             comunityClass.addPodToComunity(ctx, params.podId, params.comunityId)
         ]).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
@@ -174,10 +176,10 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
     }
     generatePodObj(id, exchangedEnergy, storedEnergy, offgrid) {
         const pod = {
-            type: 'pod',
             podId: id,
             exchangedEnergy: exchangedEnergy,
             storedEnergy: storedEnergy,
+            type: 'pod',
             offgrid: offgrid,
         };
         return pod;

@@ -23,12 +23,13 @@ export function text_control(elem){
     }
 
 
-    export function select_control(elem){
+    export function select_control(elem,type){
+        console.log(elem)
         if(!elem){
             return '';
         }
         if(elem==="Seleziona"){
-            return "Devi selezionare una comunità";
+            return "Devi selezionare un "+type;
         }
         else {
             return '';

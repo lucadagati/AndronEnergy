@@ -12,10 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserConsumption = void 0;
 const fabric_contract_api_1 = require("fabric-contract-api");
 let UserConsumption = class UserConsumption {
-    constructor(walletId, podId, consumption) {
+    constructor(userConsumptionId, podId, consumption) {
         this.type = "userConsumption";
         this.podId = podId;
-        this.walletId = walletId;
+        this.userConsumptionId = userConsumptionId;
         this.consumption = consumption;
     }
 };
@@ -26,7 +26,7 @@ __decorate([
 __decorate([
     fabric_contract_api_1.Property(),
     __metadata("design:type", String)
-], UserConsumption.prototype, "walletId", void 0);
+], UserConsumption.prototype, "userConsumptionId", void 0);
 __decorate([
     fabric_contract_api_1.Property(),
     __metadata("design:type", String)
