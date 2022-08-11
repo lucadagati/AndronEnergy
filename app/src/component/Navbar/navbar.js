@@ -3,14 +3,32 @@ import Nav from 'react-bootstrap/Nav';
 import { Navbar } from "react-bootstrap"
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Container from 'react-bootstrap/Container';
-
+import useAuth from '../../context/useAuth';
+import { useEffect } from 'react';
+import useLogout from '../../functions/logout';
 
 function Navbar_comunita(){
+    const auth=useAuth();
+    const logout = useLogout();
+    useEffect(()=>{},[auth])
+
+  const logoutFunc=async()=>{
+    let resp=await logout();
+    console.log(resp)
+    if(resp.status===204)
+        window.location.reload();
+    else {
+      return ;;//naviga alla pagina di errore
+    }
+    }
+    
+
     return(
+
       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-        <Container>
+      {auth?.auth.user?  (<Container>
           <Navbar.Brand >Comunità</Navbar.Brand>
-          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+      <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto">
             <Nav.Link href="/pod">Pod</Nav.Link>
@@ -19,21 +37,14 @@ function Navbar_comunita(){
             <Nav.Link href="/user  ">Users</Nav.Link>
         </Nav>
       <Nav>
-      <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
-              <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">
-                Another action
-            </NavDropdown.Item>
-          <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-            <NavDropdown.Divider />
-            <NavDropdown.Item href="#action/3.4">
-              Separated link
-            </NavDropdown.Item>
-          </NavDropdown>
+      <NavDropdown title={auth?.auth.user} id="collasible-nav-dropdown">
+              <NavDropdown.Item href="/register">Aggiungi admin</NavDropdown.Item>
+              <NavDropdown.Item onClick={()=>logoutFunc()}>Logout</NavDropdown.Item>
+      </NavDropdown>
      
-    </Nav>
+    </Nav> 
   </Navbar.Collapse>
-</Container>
+</Container>):(<Container><Navbar.Brand >Comunità</Navbar.Brand></Container>)}
 </Navbar>
 
     )

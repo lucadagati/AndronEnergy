@@ -18,7 +18,6 @@ const gatewayConnectionTetstChain= async (req,res,next)=>{
 
 
 router.get('/:asset',gatewayConnectionTetstChain,async(req,res)=>{
-     res.set('Access-Control-Allow-Origin', '*');
      try{
         let asset=req.params.asset
         let result = JSON.parse(Buffer.from(await contract.submitTransaction(asset+':getAll')).toString())

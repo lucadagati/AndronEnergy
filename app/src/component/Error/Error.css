@@ -1,0 +1,22 @@
+.Error{
+    margin: auto;
+    margin-top:100px;
+    padding: 20px;
+    width: 45%;
+    height: 30%;
+    min-height: 250px;
+    min-width: 300px;
+    background-color: #FFBABA;
+    border-radius: 10px;
+    border: 1px solid rgb(233, 233, 227);
+
+
+}
+
+.Error .btn-secondary{
+    border-radius:"50px";    
+}
+
+.Error .btn-secondary:hover{
+    background-color: rgb(47, 149, 172);
+}

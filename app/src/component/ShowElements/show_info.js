@@ -4,11 +4,18 @@ import PlotData from "../plot/plot";
 import { RenderList } from "../table/table";
 import { capitalize } from "../../functions/formatData";
 import { static_table } from "../table/table";
+import { ReactComponent as Back} from "../../back.svg";
 
 function ShowInfo(props){
     const [rendering,setRendering]=useState();
     const [plot,setPlot]=useState();
 
+
+
+    const go_back=()=>{
+        props.setInfo(()=>false);
+        props.setRender(()=>true);
+    }
 
     const filter_data=(val)=>{
         let reg1=/Pod|Plant|User/g;
@@ -69,6 +76,8 @@ function ShowInfo(props){
     return (
 
         <div style={{ "backgroundColor": "#f8f9fa"}}>
+            <button type="button" onClick={()=>go_back()}className="btn btn-sm" style={{"marginLeft":"15px",width:"60px",height:"60px",color:"gray"}}><Back/></button>
+
             {plot}
             {rendering}
         </div>

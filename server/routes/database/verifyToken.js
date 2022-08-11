@@ -3,6 +3,7 @@ const db = require('../../database');
 
 
 const verifyToken=(req,res,next)=>{
+    console.log(req.headers.authorization)
     const auth=req.headers.authorization || req.headers.Authorization;
     if (!auth?.startsWith('Bearer ')) return res.sendStatus(401);
     const token = auth.split(' ')[1];

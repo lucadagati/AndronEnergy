@@ -17,7 +17,7 @@ export function remove_data_from_table(type,id,setFunction){
         }
 
 
-export async function get_table(type,setTable,set_data){
+export async function get_table(type,setTable,set_data,token,setError){
         //console.log(list)
         const search_pattern=(elem)=>{
             if(typeof elem=== 'object'&&!Array.isArray(elem) && elem!== null){
@@ -28,28 +28,33 @@ export async function get_table(type,setTable,set_data){
             }
             else return elem;
         }
-            await get([type])
-                .then(res=>{console.log(res)
-                    let table_fields=res[0].data.message.map((val,key)=>{
-                        return (
-                            <tr key={key}>
-                                <td key={key+"name"} style={{"cursor":"pointer"}} onClick={()=>{set_data(val)}}>
-                                    {val[type+"Id"]}
-                                </td>
-                               {type==='userConsumption'? 
-                                    (<td key={key+"namePod"} style={{"cursor":"pointer"}} onClick={()=>{set_data(val)}}>
-                                            {val['podId']}
-                                        </td>):(undefined)
-                                }
-                                <td style={{"width":"80px"}} key={key+'delete_button'}>
-                                <button type="button" onClick={()=>{let res=search_pattern(val); if(val===res){remove_data_from_table(type,val,setTable)}else remove_data_from_table(type,val[res],setTable)}}className="btn btn-sm btn-danger" style={{"marginLeft":"15px"}}><Trash/></button>
-                                </td>
-                            </tr>
-                            
-                        )
+            await get([type],token)
+                .then(
+                    res=>{
+                        console.log(res)
+                        if(!res.error){
+                            let table_fields=res[0].data.message.map((val,key)=>{
+                                return (
+                                    <tr key={key}>
+                                        <td key={key+"name"} style={{"cursor":"pointer"}} onClick={()=>{set_data(val)}}>
+                                            {val[type+"Id"]}
+                                        </td>
+                                    {type==='userConsumption'? 
+                                            (<td key={key+"namePod"} style={{"cursor":"pointer"}} onClick={()=>{set_data(val)}}>
+                                                    {val['podId']}
+                                                </td>):(undefined)
+                                        }
+                                        <td style={{"width":"80px"}} key={key+'delete_button'}>
+                                        <button type="button" onClick={()=>{let res=search_pattern(val); if(val===res){remove_data_from_table(type,val,setTable)}else remove_data_from_table(type,val[res],setTable)}}className="btn btn-sm btn-danger" style={{"marginLeft":"15px"}}><Trash/></button>
+                                        </td>
+                                    </tr>
+                                    
+                                )
                     });
                 
                 setTable(()=>table_fields);
+            }
+            else setError(true)
         })
         .catch(err=>console.log(err));
         
@@ -71,8 +76,8 @@ export function static_table(list){
 
 export function RenderList(props){
     return (
-       props.info ?  (<AddElement data={props.data}/>):( <div className='table_styling'>
-       {  !props.static?(<Table  bordered hover size="sm">
+       props.info ?  (<AddElement data={props.data}/>):( <div className='table_styling'  style={{width:"63%",minWidth:"300px"}}>
+       {  !props.static?(<Table  bordered hover size="sm" style={{width:"100%"}}>
                 <thead>
                     <tr>
                         <th>{capitalize(props.type.replace(/([A-Z])/g, ' $1').trim())} Id</th>

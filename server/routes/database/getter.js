@@ -14,7 +14,7 @@ router.get('/user/:id',(req,res)=>{
     });
 })
 
-router.get('/token/:id',(req,res)=>{
+router.get('/token/',(req,res)=>{
     var query = "select * from token";
     var params=req.params.id
     db.get(query,(err,row)=>{

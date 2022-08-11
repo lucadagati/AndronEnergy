@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios from "./axios";
 
-export  async function get(endpoints){
+export  async function get(endpoints,token){
     /*const headers = { 'Content-Type': 'application/json',"Access-Control-Allow-Origin": "*"} 
     let res=await axios.get('http://localhost:8060/'+type,headers);
     if(res.response.status!==200){
@@ -11,7 +11,7 @@ export  async function get(endpoints){
     let result=[] 
     try{
         for(let i=0;i<endpoints.length;i++){
-            result=[...result,await  axios.get('http://localhost:8060/'+endpoints[i])];
+            result=[...result,await  axios.get(endpoints[i],{headers: { 'Authorization': `Bearer ${token}` ,'Content-Type': 'application/json' },withCredentials: true})];
                 
             }
         return result;
@@ -19,11 +19,18 @@ export  async function get(endpoints){
 
     } catch (err) {
         // Handle Error Here
-        console.error(err);
+        if(err.status===500){
+            return {error:"Qualcosa è andato storto"}
+        }
+        else{
+            return {error:err}
+
+        }
     }
 
 }
 
+/*
 export async function get_data(type,id){
     const call=fetch('http://localhost:8060/+'+type+'/'+id);
     const body=await call.json();
@@ -33,3 +40,4 @@ export async function get_data(type,id){
     }
     return body;
 }
+*/

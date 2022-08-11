@@ -23,7 +23,7 @@ function PlotData(props){
             if(Array.isArray(val)){
                 setPlotElem( {x: [...plotElem.x,val[0]] ,y: [...plotElem.y,val[1]]} )
                 plot.push( <div className="plot" key={"div"+val[2]}>
-                    <Plot className="exchanged_plot" key={key+val[2]}
+                    <Plot className="exchanged_plot" style={{width:"100%"}} key={key+val[2]}
                         data={[{x:[1,2,3,4,5,6,7,8],y:[2,3,4,5,6,7,8,9],
                         type:'scatter',
                         mode: 'lines+markers',
@@ -42,9 +42,10 @@ function PlotData(props){
 
 
     return (
-        <div className = 'flex'>
-        {plot.map(val=>val)}
-    </div>
+            
+            <div className = 'flex' style={{width:"100%",minWidth:"50px"}}>
+                {plot.map(val=>val)}
+            </div>
     )
 }
 

@@ -17,25 +17,23 @@ function AddElement(props){
 
     const add=async()=>{
         props.result_fun(()=>undefined);
-       /* let body={}
-
+        let body={}
         if (props.type==='pod'){
              body={
                 "podId":elem,
-                "comunityId":comunity
+                "comunityId":comunity,
+                "plantId":plants
             };
         }
-        else if(props.type==='comunity'){
-            body={
-                "comunityId":comunity
-            };
-        }*/
+        else{
+            body[props.type+'Id']=elem;
+            }
         /*add_elem(props.type,body).then((res)=>{
             if(res)
                 window.location.reload();
             })*/
 
-    }
+        }
 
     
     useEffect(()=>{
