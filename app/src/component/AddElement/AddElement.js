@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-//import { add_elem } from '../../api_call/post_api';
 import { text_control,select_control } from '../../functions/formControl';
 
 
@@ -14,30 +13,32 @@ function AddElement(props){
     const [error3,setError3]=useState(false);
     const [comunities,setComunities]=useState();
     const [plants,setPlants]=useState();
+    const [pods,setPods]=useState();
+    const reg=/pod|comunity|plant|user/g
 
     const add=async()=>{
         props.result_fun(()=>undefined);
         let body={}
-        if (props.type==='pod'){
-             body={
-                "podId":elem,
-                "comunityId":comunity,
-                "plantId":plants
+        body={
+                ...(elem &&{"podId":elem}),
+                ...(comunity && {"comunityId":comunity}),
+                ...(plants && {"plantId":plants})
             };
+
+            props.addFunction(body);
+
         }
-        else{
-            body[props.type+'Id']=elem;
-            }
-        /*add_elem(props.type,body).then((res)=>{
+            /*add_elem(props.type,body).then((res)=>{
             if(res)
                 window.location.reload();
             })*/
 
-        }
 
     
     useEffect(()=>{
         if(props.comunities){
+            console.log(props.comunities)
+
             const selection=()=>{
                 let comunities=props.comunities.map((val)=>{
                     return <option key={val} value={val}>{val}</option>
@@ -47,12 +48,20 @@ function AddElement(props){
             selection();
         }
         if(props.plants){
+            console.log(props.plants)
             let plants=props.plants.map((val)=>{
                 return <option key={val} value={val}>{val}</option>
             });
             setPlants(()=>plants);  
         }
-    },[props.comunities,props.plants])
+        if(props.pods){
+            console.log(props.pods);
+            let pods=props.pods.map((val)=>{
+                return <option key={val} value={val}>{val}</option>
+            });
+            setPods(()=>pods)
+        }
+    },[props.comunities,props.plants,props.pods])
 
     const handleSubmit=(event)=>{
         event.preventDefault();
@@ -80,34 +89,57 @@ function AddElement(props){
 
     }
     return(
-        <div className='form' style={{width:"63%",margin:"auto"}}>
+        <div className='form'style={{marginTop:"40px"}} >
             <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="formBasicId">
-            <Form.Label>{props.type} Id</Form.Label>
-            <Form.Control type="text"style={{ fontSize: 12, padding: 6,width:"100%" }} placeholder="Nome" 
-                onChange={(event)=>{setError('');setElem(()=>event.target.value)}} value={elem}/>
-            <p style={{color:"red"}}>{error}</p>    
-            </Form.Group>
-            {
-            props.type==='pod' && comunities && 
-                (
-                <Form.Group>
-                <Form.Label>Comunità</Form.Label>
-                <Form.Select aria-label="comunities" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError2("");setComunity(()=>event.target.value)}} className="mb-3">
-                    <option value="Seleziona">Seleziona</option>
-                    {comunities}
-                </Form.Select>
-                <p style={{color:"red"}}>{error2}</p>  
-                <Form.Label>Plants</Form.Label>
-                <Form.Select aria-label="plants" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError3("");setPlants(()=>event.target.value)}} className="mb-3">
-                    <option value="Seleziona">Seleziona</option>
-                    {plants}
-                </Form.Select>
-                <p style={{color:"red"}}>{error3}</p>    
-                </Form.Group>
-                )
-            } 
-            <Button variant="secondary" style={{"float":"right"}} className="btn btn-sm btn-primary btn-rounded"type="submit" value="Submit">
+
+            {props.type.match(reg)?    
+                (<Form.Group className="mb-3" controlId="formBasicId">
+                <Form.Label>{props.type} Id</Form.Label>
+                <Form.Control type="text"style={{ fontSize: 12, padding: 6,width:"100%" }} placeholder="Nome" 
+                    onChange={(event)=>{setError('');setElem(()=>event.target.value)}} value={elem}/>
+                <p style={{color:"red"}}>{error}</p>    
+                </Form.Group>)
+            :
+                (undefined)
+            }
+                {comunities  ? 
+                    (<Form.Group>
+                    <Form.Label>Comunità</Form.Label>
+                    <Form.Select aria-label="comunities" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError2("");setComunity(()=>event.target.value)}} className="mb-3">
+                        <option value="Seleziona">Seleziona</option>
+                        {comunities}
+                    </Form.Select>
+                    <p style={{color:"red"}}>{error2}</p> 
+                    </Form.Group>)
+                    :
+                    (undefined)}
+
+                {plants  ?
+                    (<Form.Group>
+                    <Form.Label>Plants</Form.Label>
+                    <Form.Select aria-label="plants" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError3("");setPlants(()=>event.target.value)}} className="mb-3">
+                        <option value="Seleziona">Seleziona</option>
+                        {plants}
+                    </Form.Select>
+                    <p style={{color:"red"}}>{error3}</p>    
+                    </Form.Group>)
+                    :
+                    (undefined)
+                }
+
+                {props.type==='userConsumption' ?
+                        (<Form.Group>
+                            <Form.Label>Pods</Form.Label>
+                            <Form.Select aria-label="plants" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError3("");setPlants(()=>event.target.value)}} className="mb-3">
+                                <option value="Seleziona">Seleziona</option>
+                                {pods}
+                            </Form.Select>
+                            <p style={{color:"red"}}>{error3}</p>    
+                            </Form.Group>)
+                    :
+                        (undefined)}
+            
+            <Button variant="primary" style={{"float":"right"}} className="btn btn-sm btn-primary btn-rounded"type="submit" value="Submit">
             Aggiungi
             </Button>
         </Form>

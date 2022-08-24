@@ -1,6 +1,7 @@
 export declare class PodStruct {
     readonly type: string;
     podId: string;
+    plantIds: string[];
     exchangedEnergy: {
         "time": number;
         "exchangedEnergy": number;
@@ -10,7 +11,7 @@ export declare class PodStruct {
         "storedEnergy": number;
     }[];
     offgrid: string;
-    constructor(podId: string, exchangedEnergy: {
+    constructor(podId: string, plantIds: string[], exchangedEnergy: {
         "time": number;
         "exchangedEnergy": number;
     }[], storedEnergy: {

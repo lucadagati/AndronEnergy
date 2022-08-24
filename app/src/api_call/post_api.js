@@ -27,3 +27,5 @@ export async function delete_elem(type,id){
     return body;
     
 }
+
+

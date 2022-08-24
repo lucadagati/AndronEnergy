@@ -9,4 +9,6 @@ export declare class PodCrudOperations extends ContractExtension {
     updateOffGrid(ctx: Context, id: string, param: string): Promise<Object>;
     private generatePodObj;
     DeletePod(ctx: Context, id: string): Promise<Object>;
+    podUpdatePlant(ctx: Context, param: string): Promise<Object>;
+    removePlantfromPods(ctx: Context, pods: string[], plantId: string): Promise<void>;
 }

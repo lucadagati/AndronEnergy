@@ -13,6 +13,7 @@ exports.PlantOperations = void 0;
 const fabric_contract_api_1 = require("fabric-contract-api");
 const contractExtension_1 = require("../../utility/contractExtension");
 const asset_1 = require("../../utility/asset");
+const podController_1 = require("../pod/podController");
 let PlantOperations = class PlantOperations extends contractExtension_1.ContractExtension {
     constructor() {
         //do un nome al contratto che ho creato per distinguerlo dagli altri
@@ -26,7 +27,6 @@ let PlantOperations = class PlantOperations extends contractExtension_1.Contract
         }
         const plant = {
             plantId: params.plantId,
-            podId: [],
             generatedEnergy: [{ "time": 0, "consumption": 0 }],
             type: 'plant',
         };
@@ -43,6 +43,29 @@ let PlantOperations = class PlantOperations extends contractExtension_1.Contract
         return Promise.all([await ctx.stub.putState(plant.type + "-" + plant.plantId, Buffer.from(JSON.stringify(plant)))])
             .then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
+    async DeletePlant(ctx, id) {
+        // const comunityClass=new ComunityController();
+        const podClass = new podController_1.PodCrudOperations();
+        const exists = await this.get(ctx, id);
+        const pods = JSON.parse(await podClass.getAll(ctx));
+        if (!exists) {
+            throw new Error(`The plant ${id} does not exist`);
+        }
+        //const comunities=comunity.getComunities();
+        let res;
+        for (const pod of pods) {
+            let plants = pod.plantIds;
+            if (pods.includes(id)) {
+                res = res.concat(plants);
+                break;
+            }
+        }
+        return Promise.all([
+            //comunityClass.DeletePodFromComunity(ctx,id,res.comunityId),
+            podClass.removePlantfromPods(ctx, res, id),
+            await ctx.stub.deleteState('plant-' + id).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; })
+        ]).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
+    }
 };
 __decorate([
     fabric_contract_api_1.Transaction(true),
@@ -56,6 +79,12 @@ __decorate([
     __metadata("design:paramtypes", [fabric_contract_api_1.Context, String, String]),
     __metadata("design:returntype", Promise)
 ], PlantOperations.prototype, "updateGeneratedEnergy", null);
+__decorate([
+    fabric_contract_api_1.Transaction(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
+    __metadata("design:returntype", Promise)
+], PlantOperations.prototype, "DeletePlant", null);
 PlantOperations = __decorate([
     fabric_contract_api_1.Info({ title: "crud for the plant ", description: "Operation of update create for the plant " }),
     __metadata("design:paramtypes", [])

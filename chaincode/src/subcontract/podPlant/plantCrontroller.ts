@@ -1,7 +1,8 @@
-import { Context,Info,Returns,Transaction } from "fabric-contract-api";
+import { Context,Info,Transaction } from "fabric-contract-api";
 import { ContractExtension } from '../../utility/contractExtension';
 import { PlantStruct } from "./plantStruct";
 import { Status } from '../../utility/asset';
+import { PodCrudOperations } from "../pod/podController";
 
 @Info({title:"crud for the plant ", description:"Operation of update create for the plant "})
 
@@ -19,7 +20,6 @@ export class PlantOperations extends ContractExtension{
             }
         const plant= {
             plantId:params.plantId,
-            podId:[],
             generatedEnergy:[{"time":0,"consumption":0}],
             type:'plant',
             };
@@ -45,5 +45,31 @@ export class PlantOperations extends ContractExtension{
             .then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});
 
     }
+
+    @Transaction()
+    public async DeletePlant(ctx: Context, id: string): Promise<Object> {
+       // const comunityClass=new ComunityController();
+       const podClass=new PodCrudOperations()
+        const exists= await this.get(ctx, id);
+        const pods:any=JSON.parse(await podClass.getAll(ctx));
+        if (!exists) {
+            throw new Error(`The plant ${id} does not exist`);
+        }
+
+        //const comunities=comunity.getComunities();
+        let res:any;
+        for(const pod of pods){
+             let plants=pod.plantIds;
+             if (pods.includes(id)){
+                res=res.concat(plants);
+                break;
+            }
+        }
+        return Promise.all([
+            //comunityClass.DeletePodFromComunity(ctx,id,res.comunityId),
+            podClass.removePlantfromPods(ctx,res,id),
+            await ctx.stub.deleteState('plant-'+id).then(()=>{return {status: Status.Success , message:"Operazione effettuata"}})
+           ]).then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});
+        }
 
 }

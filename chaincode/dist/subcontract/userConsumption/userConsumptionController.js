@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserConsumptionsOperations = void 0;
+const podController_1 = require("./../pod/podController");
 const fabric_contract_api_1 = require("fabric-contract-api");
 const contractExtension_1 = require("../../utility/contractExtension");
 const asset_1 = require("../../utility/asset");
@@ -50,6 +51,32 @@ let UserConsumptionsOperations = class UserConsumptionsOperations extends contra
         return Promise.all([await ctx.stub.putState(consumption.type + "-" + consumption.userConsumptionId, Buffer.from(JSON.stringify(consumption)))])
             .then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
+    async updateUserConsumptionPod(ctx, param) {
+        const params = JSON.parse(param);
+        const podClass = new podController_1.PodCrudOperations();
+        let exist = await this.get(ctx, params.userConsumptionId);
+        let podExist = podClass.get(ctx, params.podId);
+        if (!exist) {
+            throw new Error("The user with  id:" + params.userConsumptionId + " does not exists");
+        }
+        else if (!podExist) {
+            throw new Error("The pod with  id:" + params.podId + " does not exists");
+        }
+        else {
+            exist.podId = params.podId;
+            return Promise.all([await ctx.stub.putState('userConsumption-' + exist.userConsumptionId, Buffer.from(JSON.stringify(exist)))])
+                .then(() => { return { status: asset_1.Status.Success, message: "Operazione effetuata" }; });
+        }
+    }
+    async deletePodFromUser(ctx, podId) {
+        let exist = JSON.parse(await this.getAll(ctx));
+        for (const user of exist) {
+            if (user.podId === podId) {
+                user.podId = "";
+                await ctx.stub.putState('userConsumption-' + user.userConsumptionId, Buffer.from(JSON.stringify(user)));
+            }
+        }
+    }
 };
 __decorate([
     fabric_contract_api_1.Transaction(true),
@@ -63,6 +90,18 @@ __decorate([
     __metadata("design:paramtypes", [fabric_contract_api_1.Context, String, String]),
     __metadata("design:returntype", Promise)
 ], UserConsumptionsOperations.prototype, "AddConsumption", null);
+__decorate([
+    fabric_contract_api_1.Transaction(true),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
+    __metadata("design:returntype", Promise)
+], UserConsumptionsOperations.prototype, "updateUserConsumptionPod", null);
+__decorate([
+    fabric_contract_api_1.Transaction(true),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
+    __metadata("design:returntype", Promise)
+], UserConsumptionsOperations.prototype, "deletePodFromUser", null);
 UserConsumptionsOperations = __decorate([
     fabric_contract_api_1.Info({ title: "crud for the plant ", description: "Operation of update create for the plant " }),
     __metadata("design:paramtypes", [])

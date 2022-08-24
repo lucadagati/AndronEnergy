@@ -34,7 +34,7 @@ function Navbar_comunita(){
             <Nav.Link href="/pod">Pod</Nav.Link>
             <Nav.Link href="/comunity">Comunity</Nav.Link>
             <Nav.Link href="/plant">Plant</Nav.Link>
-            <Nav.Link href="/user  ">Users</Nav.Link>
+            <Nav.Link href="/user  ">Consumi utenza</Nav.Link>
         </Nav>
       <Nav>
       <NavDropdown title={auth?.auth.user} id="collasible-nav-dropdown">

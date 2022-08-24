@@ -6,13 +6,11 @@ export class PlantStruct{
     public readonly type: string = "plant"
     @Property()
     public plantId:string;
-    @Property()
-    public podId:[];
+
     @Property()
     public generatedEnergy:{"time":number,"consumption":number}[];
     
-    constructor(plantId:string,podId:[],generatedEnergy:{"time":number,"consumption":number}[]){
-        this.podId=podId;
+    constructor(plantId:string,generatedEnergy:{"time":number,"consumption":number}[]){
         this.plantId=plantId;
         this.generatedEnergy=generatedEnergy;
     }

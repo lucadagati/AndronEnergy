@@ -32,6 +32,22 @@ router.post('/Add',gatewayConnectionTetstChain,async(req,res)=>{
     }
 })
 
+router.post('/UpdateUserPod',gatewayConnectionTetstChain,async(re,res)=>{
+    try {
+        let result= JSON.parse(Buffer.from(await contract.submitTransaction("userConsumption:updateUserConsumptionPod",JSON.stringify(req.body))).toString())
+        res.status(result.status==="error" ? 400 : 200).json(result);
+    }
+    catch (error) {
+        console.error(`Failed to evaluate transaction: ${error}`);
+        res.status(500).json({status: "error", message: error});
+    }
+    finally{
+        await gateway.disconnect();
+    }
+})
+
+
+
 router.put('/Update/Consumption/:id',gatewayConnectionTetstChain,async(req,res)=>{
     try {
             let result=JSON.parse(Buffer.from(await contract.submitTransaction(`userConsumption:AddConsumption`,req.params.id,JSON.stringify(req.body))).toString())

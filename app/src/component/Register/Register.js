@@ -40,7 +40,9 @@ function Register(){
         <Form onSubmit={handleSubmit}>
       <Form.Group as={Col} className="mb-3" autoComplete="off" controlId="formPlaintextEmail">
         <Form.Label column sm="12">
-          <h4 style={{textAlign:'center'}}>Username</h4>
+        <div style={{width:"85%",margin:"auto"}}>
+          <h4 style={{position:'relative'}}>Username</h4>
+        </div>
         </Form.Label>
         <Col sm="10"style={{margin:"auto"}}>
         <Form.Control type="text" placeholder="username" autoComplete="off" required onChange={(event)=>{setUsername(()=>event.target.value)}} />
@@ -49,7 +51,9 @@ function Register(){
 
       <Form.Group as={Col} className="mb-3" controlId="formPlaintextPassword">
         <Form.Label column sm="12">
-          <h4 style={{textAlign:'center'}}>Password</h4>
+        <div style={{width:"85%",margin:"auto"}}>
+          <h4 style={{position:'relative'}}>Password</h4>
+          </div>
         </Form.Label>
         <Col sm="10" style={{margin:"auto"}}>
           <Form.Control type="password" placeholder="Password" autoComplete="off" required onChange={(event)=>{setPassword(()=>event.target.value)}}/>
@@ -59,7 +63,9 @@ function Register(){
 
       <Form.Group as={Col} className="mb-3" controlId="formPlaintextPassword">
         <Form.Label column sm="12">
-          <h4 style={{textAlign:'center'}}>Reinserisci Password</h4>
+        <div style={{width:"85%",margin:"auto",minWidth:"220px"}}>
+          <h4 style={{position:'relative'}}>Reinserisci Password</h4>
+          </div>
         </Form.Label>
         <Col sm="10" style={{margin:"auto"}}>
           <Form.Control type="password" placeholder="Reinserisci password" autoComplete="off" required onChange={(event)=>{setPassword(()=>event.target.value)}}/>

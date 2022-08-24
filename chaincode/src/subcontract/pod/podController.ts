@@ -1,4 +1,5 @@
 import { PlantOperations } from './../podPlant/plantCrontroller';
+import { UserConsumptionsOperations } from './../userConsumption/userConsumptionController';
 import { Status } from '../../utility/asset';
 import { Context,Info,Transaction } from "fabric-contract-api";
 import { PodStruct } from "./podStruct";
@@ -19,6 +20,7 @@ export class PodCrudOperations extends ContractExtension{
         [
             {
             podId:"Pod1",
+            plantIds:["Plant2"],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
             type:"pod",
@@ -26,6 +28,7 @@ export class PodCrudOperations extends ContractExtension{
 
             {
             podId:"Pod2",
+            plantIds:["Plant3","Plant1"],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
             type:"pod",
@@ -33,12 +36,14 @@ export class PodCrudOperations extends ContractExtension{
 
             {
             podId:"Pod3",
+            plantIds:["Plant1"],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
             type:"pod",
             offgrid:'' },
             {
             podId:"Pod4",
+            plantIds:["Plant1","Plant2"],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
             type:"pod",
@@ -54,13 +59,16 @@ export class PodCrudOperations extends ContractExtension{
             }
         const plant1={
             plantId:"Plant1",
-            podId:["Pod1","Pod2"],
             generatedEnergy:[{"time":0,"generatedEnergy":0}],
             type:"plant",
         }
         const plant2={
             plantId:"Plant2",
-            podId:["Pod3","Pod4"],
+            generatedEnergy:[{"time":0,"generatedEnergy":0}],
+            type:"plant"
+        }
+        const plant3={
+            plantId:"Plant3",
             generatedEnergy:[{"time":0,"generatedEnergy":0}],
             type:"plant"
         }
@@ -86,6 +94,7 @@ export class PodCrudOperations extends ContractExtension{
         await ctx.stub.putState('comunity-'+comunity.comunityId,Buffer.from(JSON.stringify(comunity)))
         await ctx.stub.putState('plant-'+plant1.plantId,Buffer.from(JSON.stringify(plant1)));
         await ctx.stub.putState('plant-'+plant2.plantId,Buffer.from(JSON.stringify(plant2)));
+        await ctx.stub.putState('plant-'+plant3.plantId,Buffer.from(JSON.stringify(plant3)));
         await ctx.stub.putState('userConsumption-'+user1.userConsumptionId,Buffer.from(JSON.stringify(user1)));
         await ctx.stub.putState('userConsumption-'+user2.userConsumptionId,Buffer.from(JSON.stringify(user2)));
 
@@ -107,6 +116,7 @@ export class PodCrudOperations extends ContractExtension{
         const pod:PodStruct={
             type:"pod",
             podId:params.podId,
+            plantIds:params.platIds,
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
             offgrid:'' ,
@@ -198,6 +208,7 @@ export class PodCrudOperations extends ContractExtension{
     @Transaction()
     public async DeletePod(ctx: Context, id: string): Promise<Object> {
         const comunityClass=new ComunityController();
+        const userClass= new UserConsumptionsOperations()
         const exists= await this.get(ctx, id);
         const comunities:any=JSON.parse(await comunityClass.getAll(ctx));
         if (!exists) {
@@ -214,10 +225,47 @@ export class PodCrudOperations extends ContractExtension{
         }
         return Promise.all([
             comunityClass.DeletePodFromComunity(ctx,id,res.comunityId),
+            userClass.deletePodFromUser(ctx,id),
             await ctx.stub.deleteState('pod-'+id).then(()=>{return {status: Status.Success , message:"Operazione effettuata"}})
            ]).then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});
     
    
+    }
+
+    @Transaction()
+    public async podUpdatePlant(ctx:Context,param:string): Promise<Object> {
+        const params=JSON.parse(param);
+        const plantClass=new PlantOperations();
+        const exist:any=await this.get(ctx,params.podId);
+        const plant:any=await plantClass.get(ctx,params.plantId);
+        if(!plant){
+            throw new Error(`The plant ${plant.plantId} does not exist`);
+        }
+        else if(!exist){
+            throw new Error(`The pod ${exist.podId} does not exist`);
+        }
+        else{
+            exist.plantId=exist.plantId.concat(params.plant.plantId);
+            return Promise.all([await ctx.stub.putState('pod-'+exist.podId,Buffer.from(JSON.stringify(exist)))])
+            .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
+        }
+
+    }
+
+    @Transaction()
+    public async removePlantfromPods(ctx:Context,pods:string[],plantId:string):Promise<void>{
+
+        for(const pod of pods ){
+            let exists:any= await this.get(ctx, pod);
+            if (!exists) {
+                throw new Error(`The pod ${pod} does not exist`);
+            }
+            else{
+                 exists.plantIds=exists.plantIds.filter((elem:String)=>elem!==plantId);
+                 await ctx.stub.putState('pod-'+exists.podId,Buffer.from(JSON.stringify(exists)))
+            }
+        }
+
     }
 
 }

@@ -12,9 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PodStruct = void 0;
 const fabric_contract_api_1 = require("fabric-contract-api");
 let PodStruct = class PodStruct {
-    constructor(podId, exchangedEnergy, storedEnergy, offgrid) {
+    constructor(podId, plantIds, exchangedEnergy, storedEnergy, offgrid) {
         this.type = "pod";
         this.podId = podId;
+        this.plantIds = plantIds;
         this.offgrid = offgrid;
         this.exchangedEnergy = exchangedEnergy;
         this.storedEnergy = storedEnergy;
@@ -31,6 +32,10 @@ __decorate([
 __decorate([
     fabric_contract_api_1.Property(),
     __metadata("design:type", Array)
+], PodStruct.prototype, "plantIds", void 0);
+__decorate([
+    fabric_contract_api_1.Property(),
+    __metadata("design:type", Array)
 ], PodStruct.prototype, "exchangedEnergy", void 0);
 __decorate([
     fabric_contract_api_1.Property(),
@@ -42,7 +47,7 @@ __decorate([
 ], PodStruct.prototype, "offgrid", void 0);
 PodStruct = __decorate([
     fabric_contract_api_1.Object(),
-    __metadata("design:paramtypes", [String, Array, Array, String])
+    __metadata("design:paramtypes", [String, Array, Array, Array, String])
 ], PodStruct);
 exports.PodStruct = PodStruct;
 //# sourceMappingURL=podStruct.js.map

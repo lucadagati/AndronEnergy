@@ -1,4 +1,7 @@
 
+import axios from "./axios";
+
+
 export async function get_pods(){
     const headers = { 'Content-Type': 'application/json',"Access-Control-Allow-Origin": "*"} 
     const call=await fetch('http://localhost:8060/pod',headers);
@@ -30,6 +33,43 @@ export async function delete_pod(id){
     
 }
 
+
+export async function updatePodPlant(obj){
+    try{
+        await axios.post('podOp/updatePodPlant',JSON.stringify(obj),
+        {
+            headers: {'Content-Type': 'application/json' },
+            withCredentials: true
+        });
+        //console.log(res);
+        }
+
+    catch (err) {
+        if(err.response?.status===500){
+            return {error:"Qualcosa è andato storto"};
+        }
+        else return {error:err.message};
+    }
+}
+
+
+export async function removePlantfromPods(obj){
+    try{
+        await axios.post('podOp/removePlantfromPods',obj,
+        {
+            headers: {'Content-Type': 'application/json' },
+            withCredentials: true
+        });
+        //console.log(res);
+        }
+
+    catch (err) {
+        if(err.response?.status===500){
+            return {error:"Qualcosa è andato storto"};
+        }
+        else return {error:err.message};
+    }
+}
 
 export async function add_pod(pod_obj){
     const request={

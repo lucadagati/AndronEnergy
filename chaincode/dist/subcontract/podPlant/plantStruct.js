@@ -12,9 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PlantStruct = void 0;
 const fabric_contract_api_1 = require("fabric-contract-api");
 let PlantStruct = class PlantStruct {
-    constructor(plantId, podId, generatedEnergy) {
+    constructor(plantId, generatedEnergy) {
         this.type = "plant";
-        this.podId = podId;
         this.plantId = plantId;
         this.generatedEnergy = generatedEnergy;
     }
@@ -30,14 +29,10 @@ __decorate([
 __decorate([
     fabric_contract_api_1.Property(),
     __metadata("design:type", Array)
-], PlantStruct.prototype, "podId", void 0);
-__decorate([
-    fabric_contract_api_1.Property(),
-    __metadata("design:type", Array)
 ], PlantStruct.prototype, "generatedEnergy", void 0);
 PlantStruct = __decorate([
     fabric_contract_api_1.Object(),
-    __metadata("design:paramtypes", [String, Array, Array])
+    __metadata("design:paramtypes", [String, Array])
 ], PlantStruct);
 exports.PlantStruct = PlantStruct;
 //# sourceMappingURL=plantStruct.js.map

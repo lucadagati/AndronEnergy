@@ -40,7 +40,7 @@ router.get('/:asset/:id',gatewayConnectionTetstChain,async(req,res)=>{
     try{
         let asset=req.params.asset;
         let id=req.p                
-        arams.id;
+        params.id;
         let result = JSON.parse(Buffer.from(await contract.submitTransaction(asset+':get',id)).toString())
                 res.status(200).json({
                 status : "success",
