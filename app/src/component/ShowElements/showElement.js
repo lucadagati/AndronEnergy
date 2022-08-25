@@ -11,12 +11,15 @@ import useAuth from "../../context/useAuth";
 import Error from "../Error/Error";
 import { add_elem } from "../../api_call/post_api";
 
+
+
 export default function ShowElement(props){
     const [info,setInfo]=useState(false);
     const [table,setTable]=useState();
     const [add,setAdd]=useState(false);
     // eslint-disable-next-line
     const [data,setData]=useState();
+    const [loading,setLoading]=useState(false);
     const [error,setError]=useState(false);
     const[comunities,setComunities]=useState();
     const [plants,setPlants]=useState();
@@ -40,12 +43,11 @@ export default function ShowElement(props){
         let prova; 
         //console.log(auth.auth.accessToken)
         prova=await get(elements,auth.auth.accessToken);
-        if(prova.length===1){
+        if(props.type==='userConsumption'){
             if(prova[0]?.status===200){
                 let list=prova[0].data.message.map((val)=>val.podId);
-                console.log(list)
                 setPods(()=>list)
-                get_table(props.type,setTable,set_data,auth.auth.accessToken,setError);
+                get_table(props.type,setTable,set_data,auth.auth.accessToken,setError,list,setLoading);
             }
         }
         else if( prova[0]?.status===200 && prova[1]?.status===200){
@@ -54,7 +56,7 @@ export default function ShowElement(props){
             list=prova[1].data.message.map((val)=>val.plantId)
             //console.log(list);
             setPlants(()=>list)
-            get_table(props.type,setTable,set_data,auth.auth.accessToken,setError);
+            get_table(props.type,setTable,set_data,auth.auth.accessToken,setError,undefined,setLoading);
         } 
         else{
             setTable(()=>{})
@@ -73,7 +75,7 @@ export default function ShowElement(props){
                 request(['pod']);
            }
             else{
-                get_table(props.type,setTable,set_data,auth.auth.accessToken,setError);
+                get_table(props.type,setTable,set_data,auth.auth.accessToken,setError,undefined,setLoading);
             }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -81,7 +83,7 @@ export default function ShowElement(props){
 
     return (
         
-        table?(<div className="showElement">
+        table && !loading ?(<div className="showElement">
                 <h3 style={{textAlign:"center",fontWeight:"300","fontSize": "2.5rem"}}>{props.type.replace(/([A-Z])/g, ' $1').trim().toUpperCase()}</h3>
                 {render&&<RenderList type={props.type}  funAdd={setAdd} add={add} info={info} result={table} comunities={comunities} plants={plants} pods={pods}/>}
                 {info&&<ShowInfo elem={data} type={props.type} addFunction={add_elem} plants={plants} setInfo={setInfo} setRender={setRender} add={add} info={info} funAdd={setAdd}/>}    

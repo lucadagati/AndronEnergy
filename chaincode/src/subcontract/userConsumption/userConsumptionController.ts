@@ -64,10 +64,30 @@ public async updateUserConsumptionPod(ctx:Context,param:string):Promise<Object>{
     }
 
 }
-
-
 @Transaction(true)
-public async deletePodFromUser(ctx:Context,podId:string):Promise<void>{
+public async deletePodFromUser(ctx:Context,param:string):Promise<Object>{
+        const params = JSON.parse(param);
+        let exist:any =await this.get(ctx,params.userConsumptionId);
+        if(!exist){
+            throw new Error("The user with  id:"+params.userConsumptionId+" does not exists");
+        }
+        else{
+            if(exist.podId===params.podId){
+                    exist.podId="";
+                    return Promise.all([await ctx.stub.putState('userConsumption-'+exist.userConsumptionId,Buffer.from(JSON.stringify(exist)))])
+                        .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
+                }
+
+            else{
+                throw new Error("The pod with is not attached to the user");
+            }
+            
+
+            }
+    }
+    
+@Transaction(true)
+public async deletePodFromUsers(ctx:Context,podId:string):Promise<void>{
         let exist =JSON.parse(await this.getAll(ctx));
         for(const user of exist){
             if(user.podId===podId){

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { text_control,select_control } from '../../functions/formControl';
-
+import useAuth from '../../context/useAuth';
 
 
 function AddElement(props){
@@ -14,6 +14,8 @@ function AddElement(props){
     const [comunities,setComunities]=useState();
     const [plants,setPlants]=useState();
     const [pods,setPods]=useState();
+    const auth=useAuth();
+
     const reg=/pod|comunity|plant|user/g
 
     const add=async()=>{

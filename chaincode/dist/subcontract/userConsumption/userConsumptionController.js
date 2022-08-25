@@ -68,7 +68,24 @@ let UserConsumptionsOperations = class UserConsumptionsOperations extends contra
                 .then(() => { return { status: asset_1.Status.Success, message: "Operazione effetuata" }; });
         }
     }
-    async deletePodFromUser(ctx, podId) {
+    async deletePodFromUser(ctx, param) {
+        const params = JSON.parse(param);
+        let exist = await this.get(ctx, params.userConsumptionId);
+        if (!exist) {
+            throw new Error("The user with  id:" + params.userConsumptionId + " does not exists");
+        }
+        else {
+            if (exist.podId === params.podId) {
+                exist.podId = "";
+                return Promise.all([await ctx.stub.putState('userConsumption-' + exist.userConsumptionId, Buffer.from(JSON.stringify(exist)))])
+                    .then(() => { return { status: asset_1.Status.Success, message: "Operazione effetuata" }; });
+            }
+            else {
+                throw new Error("The pod with is not attached to the user");
+            }
+        }
+    }
+    async deletePodFromUsers(ctx, podId) {
         let exist = JSON.parse(await this.getAll(ctx));
         for (const user of exist) {
             if (user.podId === podId) {
@@ -102,6 +119,12 @@ __decorate([
     __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
     __metadata("design:returntype", Promise)
 ], UserConsumptionsOperations.prototype, "deletePodFromUser", null);
+__decorate([
+    fabric_contract_api_1.Transaction(true),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
+    __metadata("design:returntype", Promise)
+], UserConsumptionsOperations.prototype, "deletePodFromUsers", null);
 UserConsumptionsOperations = __decorate([
     fabric_contract_api_1.Info({ title: "crud for the plant ", description: "Operation of update create for the plant " }),
     __metadata("design:paramtypes", [])
