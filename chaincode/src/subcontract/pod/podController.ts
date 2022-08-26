@@ -206,27 +206,25 @@ export class PodCrudOperations extends ContractExtension{
         return pod;
     }
     @Transaction()
-    public async DeletePod(ctx: Context, id: string): Promise<Object> {
+    public async DeletePod(ctx: Context, param: string): Promise<Object> {
+        const params = JSON.parse(param);
         const comunityClass=new ComunityController();
         const userClass= new UserConsumptionsOperations()
-        const exists= await this.get(ctx, id);
+        const exists= await this.get(ctx, params.podId);
         const comunities:any=JSON.parse(await comunityClass.getAll(ctx));
         if (!exists) {
-            throw new Error(`The pod ${id} does not exist`);
+            throw new Error(`The pod ${params.podId} does not exist`);
         }
         //const comunities=comunity.getComunities();
-        let res:any;
         for(const comunity of comunities){
              let pods=comunity.podList;
-             if (pods.includes(id)){
-                res=comunity;
-                break;
+             if (pods.includes(params.podId)===true){
+                await comunityClass.DeletePodFromComunity(ctx,params.podId,comunity.comunityId);
             }
         }
         return Promise.all([
-            comunityClass.DeletePodFromComunity(ctx,id,res.comunityId),
-            userClass.deletePodFromUser(ctx,id),
-            await ctx.stub.deleteState('pod-'+id).then(()=>{return {status: Status.Success , message:"Operazione effettuata"}})
+            userClass.deletePodFromUsers(ctx,params.podId),
+            await ctx.stub.deleteState('pod-'+params.podId)
            ]).then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});
     
    
@@ -245,23 +243,48 @@ export class PodCrudOperations extends ContractExtension{
             throw new Error(`The pod ${exist.podId} does not exist`);
         }
         else{
-            exist.plantId=exist.plantId.concat(params.plant.plantId);
-            return Promise.all([await ctx.stub.putState('pod-'+exist.podId,Buffer.from(JSON.stringify(exist)))])
-            .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
-        }
+            if(exist.plantIds.indexOf(params.plantId)!==-1)
+                return {status:Status.Success,message:"Operazione effetuata"}
+            else{
+                exist.plantIds=exist.plantIds.concat(params.plantId);
+                return Promise.all([await ctx.stub.putState('pod-'+exist.podId,Buffer.from(JSON.stringify(exist)))])
+                .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
+                }
+            }
 
     }
+
+
+    @Transaction()
+    public async removePlantfromPod(ctx:Context,param:string):Promise<Object>{
+        const params=JSON.parse(param);
+        const plantClass=new PlantOperations();
+        const plant:any=await plantClass.get(ctx,params.plantId);
+        const exist:any=await this.get(ctx,params.podId);
+        if (!exist) {
+                throw new Error(`The pod ${exist.plantIds} does not exist`);
+            }
+        else if(!plant){
+            throw new Error(`The plant ${exist.podId} does not exist`);
+        }
+        else{
+            exist.plantIds=exist.plantIds.filter((elem:String)=>elem!==params.plantId);
+            return Promise.all([await ctx.stub.putState('pod-'+exist.podId,Buffer.from(JSON.stringify(exist)))])
+                .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
+            }
+        }
+
 
     @Transaction()
     public async removePlantfromPods(ctx:Context,pods:string[],plantId:string):Promise<void>{
 
-        for(const pod of pods ){
-            let exists:any= await this.get(ctx, pod);
+        for(let i=0;i< pods.length; i++ ){
+            var exists:any= await this.get(ctx, pods[i]);
             if (!exists) {
-                throw new Error(`The pod ${pod} does not exist`);
+                throw new Error(`The pod ${pods[i]} does not exist`);
             }
             else{
-                 exists.plantIds=exists.plantIds.filter((elem:String)=>elem!==plantId);
+                 exists.plantIds=exists.plantIds.filter((elem:string)=>elem!==plantId);
                  await ctx.stub.putState('pod-'+exists.podId,Buffer.from(JSON.stringify(exists)))
             }
         }

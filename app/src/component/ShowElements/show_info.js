@@ -6,12 +6,13 @@ import { static_table } from "../table/table";
 import { ReactComponent as Back} from "../../back.svg";
 import Error from "../Error/Error";
 import { updatePodPlant } from "../../api_call/pod_api";
+import useAuth from "../../context/useAuth";
 
 function ShowInfo(props){
     const [rendering,setRendering]=useState();
     const [plot,setPlot]=useState();
     const [error,setError]=useState(false);
-
+    const auth=useAuth()
 
     const go_back=()=>{
         props.setInfo(()=>false);
@@ -52,8 +53,8 @@ function ShowInfo(props){
             // eslint-disable-next-line
             let [plantList,energyData,title]=filter_data(props.elem);
             setPlot(()=><PlotData elem={energyData} type={props.type} title_list={title}/>)
-            let table=static_table(plantList,true,title,setError);
-            setRendering(()=><RenderList result={table} static={0}  add={props.add} plants={props.plants} type={title+" Plants"} funAdd={props.funAdd} addFunction={updatePodPlant}/>)
+            let table=static_table(plantList,true,title,setError,auth.auth.accessToken,props.setLoading);
+            setRendering(()=><RenderList result={table} static={0}  setLoading={props.setLoading} add={props.add} plants={props.plants} type={title+" Plants"} funAdd={props.funAdd} addFunction={updatePodPlant}/>)
 
 
         }

@@ -85,8 +85,8 @@ export default function ShowElement(props){
         
         table && !loading ?(<div className="showElement">
                 <h3 style={{textAlign:"center",fontWeight:"300","fontSize": "2.5rem"}}>{props.type.replace(/([A-Z])/g, ' $1').trim().toUpperCase()}</h3>
-                {render&&<RenderList type={props.type}  funAdd={setAdd} add={add} info={info} result={table} comunities={comunities} plants={plants} pods={pods}/>}
-                {info&&<ShowInfo elem={data} type={props.type} addFunction={add_elem} plants={plants} setInfo={setInfo} setRender={setRender} add={add} info={info} funAdd={setAdd}/>}    
+                {render&&<RenderList type={props.type}  funAdd={setAdd} add={add} info={info} result={table} comunities={comunities} plants={plants} pods={pods} setLoading={setLoading}/>}
+                {info&&<ShowInfo elem={data} type={props.type} addFunction={add_elem} plants={plants} setInfo={setInfo} setRender={setRender} add={add} info={info} funAdd={setAdd} setLoading={setLoading}/>}    
                 </div>)
                 :(error ?
                     (<Error/>)

@@ -7,20 +7,23 @@ import AddElement from "../AddElement/AddElement";
 import Table from 'react-bootstrap/Table';
 import { capitalize } from "../../functions/formatData";
 import { useState } from "react";
-import { removePlantfromPods} from "../../api_call/pod_api";
+import { removePlantfromPod} from "../../api_call/pod_api";
 import { removeUserPod } from "../../api_call/userConsumption_api";
 import { Form } from "react-bootstrap";
 import { updateUserPod } from "../../api_call/userConsumption_api";
+import { add_elem } from "../../api_call/post_api";
 
-export function remove_data_from_table(type,id,setFunction){
-        //console.log(type,id)
+export async function remove_data_from_table(type,id,setFunction,token){
         setFunction(()=>undefined);
         //console.log(id)
-        delete_elem(type,id)
-                .then((res)=>{
-                    if(res){
-                    window.location.reload();
-                    }})
+        let body={
+        }
+        body[type+'Id']=id;
+        let res= await delete_elem(type,body,token);
+        console.log(res)
+        if(res.status===200){
+            window.location.reload();
+            }
         }
 
 
@@ -55,7 +58,7 @@ export async function get_table(type,setTable,set_data,token,setError,pods,setLo
         });
         const search_pattern=(elem)=>{
             if(typeof elem=== 'object'&&!Array.isArray(elem) && elem!== null){
-                let regex=/Id/g;
+                let regex=/Id$/g;
                 let res=Object.keys(elem);
                 res=res.filter((val)=>val.match(regex))
                 return res;
@@ -99,12 +102,12 @@ export async function get_table(type,setTable,set_data,token,setError,pods,setLo
                                                     (
                                                     <div className="container" style={{display:"flex",flexDirection:"row"}}>
                                                         <div style={{width:"40%"}}>
-                                                            <Form.Select style={{ fontSize: 12, padding: 6,width:"100%",height:"28px" }} onChange={(event)=>{elemSelect=event.target.value}}>
+                                                            <Form.Select style={{ fontSize: 12, padding: 6,width:"100%",minWidth:"50px",height:"28px" }} onChange={(event)=>{elemSelect=event.target.value}}>
                                                                 <option value="Seleziona">Seleziona</option>
                                                                 {podsSelect}
                                                             </Form.Select>
                                                         </div>
-                                                        <div style={{marginLeft:"10px"}}>
+                                                        <div style={{marginLeft:"20px",width:"40%"}}>
                                                             <button type="button" style={{padding:"0",border:"none",background:"none"}} onClick={()=>{updateUser(val[type+'Id'])}}> 
                                                                 <Add style={{width:"20px",height:"20px"}}/>
                                                             </button>
@@ -114,7 +117,14 @@ export async function get_table(type,setTable,set_data,token,setError,pods,setLo
                                                 </td>):(undefined)
                                         }
                                         <td style={{"width":"80px"}} key={key+'delete_button'}>
-                                        <button type="button" onClick={()=>{let res=search_pattern(val); if(val===res){remove_data_from_table(type,val,setTable)}else remove_data_from_table(type,val[res],setTable)}}className="btn btn-sm btn-danger" style={{"marginLeft":"15px"}}><Trash/></button>
+                                        <button type="button" onClick={()=>{
+                                            let res=search_pattern(val); 
+                                            if(val===res){
+                                                remove_data_from_table(type,val,setTable,token)}
+                                            else remove_data_from_table(type,val[res],setTable,token)}}
+                                            className="btn btn-sm btn-danger" style={{"marginLeft":"15px"}}>
+                                            <Trash/>
+                                        </button>
                                         </td>
 
                                     </tr>
@@ -130,7 +140,7 @@ export async function get_table(type,setTable,set_data,token,setError,pods,setLo
         
     
 }
-export function static_table(list,remove,title,setError){
+export function static_table(list,remove,title,setError,token,setLoading){
     let table_fields=list.map((val,key)=>{
         return(
             <tr key={key+val}>
@@ -139,12 +149,13 @@ export function static_table(list,remove,title,setError){
                 </td>
                 {remove?
                 (<td style={{"width":"80px"}} key={key+'delete_button'}>
-                    <button type="button" className="btn btn-sm btn-danger" onClick={()=>{
+                    <button type="button" className="btn btn-sm btn-danger" onClick={async()=>{
                         if(title) {
-                            let result=removePlantfromPods({pods:[title],plantId:val})
-                            if(result.data.error)
-                                setError(true);
-                            window.location.reload();
+                            setLoading(()=>true);
+                            let result=await removePlantfromPod({podId:title,plantId:val},token);
+                            if(result.status===200)
+                                //setError(true);
+                                window.location.reload();
                         }    
                         }} style={{"marginLeft":"15px"}}><Trash/></button>
                 </td>)
@@ -164,7 +175,7 @@ export function RenderList(props){
     const [add,setAdd]=useState(false);
 
     return (
-       props.info ?  (<AddElement data={props.data} pods={props.pods} addFunction={props.addFunction} />):(
+       props.info ?  (<AddElement setLoading={props.setLoading} data={props.data} pods={props.pods} addFunction={add_elem} />):(
        <div className='table_styling'  style={{width:"63%",minWidth:"300px",backgroundColor:"#f8f9fa"}}>
        {  !props.static?(
             
@@ -198,7 +209,7 @@ export function RenderList(props){
             {!add  && !props.static && <button type="button"className="btn btn-sm btn-primary btn-rounded" style={{"float":"right"}} onClick={()=>setAdd(()=>true)}>Aggiungi</button>}
             {add ? 
                 (<div style={{width:"100%",margin:"auto",marginTop:"20px",backgroundColor:"#f8f9fa"}}>
-                    <AddElement type={props.type} data={props.data} plants={props.plants} comunities={props.comunities} pods ={props.pods} addFunction={props.addFunction} /></div>)
+                    <AddElement setLoading={props.setLoading} type={props.type} data={props.data} plants={props.plants} comunities={props.comunities} pods ={props.pods} addFunction={add_elem} /></div>)
                 :
                 (undefined)}
         </div>)

@@ -179,7 +179,7 @@ router.get('/logout',(req,res)=>{
 
 router.get('/refreshToken/',(req,res)=>{
     const cookies=req.cookies;
-    console.log(cookies)
+    //console.log(cookies)
     if(!cookies?.jwt){
         return res.sendStatus(401);
     }

@@ -195,27 +195,25 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
         };
         return pod;
     }
-    async DeletePod(ctx, id) {
+    async DeletePod(ctx, param) {
+        const params = JSON.parse(param);
         const comunityClass = new comunityController_1.ComunityController();
         const userClass = new userConsumptionController_1.UserConsumptionsOperations();
-        const exists = await this.get(ctx, id);
+        const exists = await this.get(ctx, params.podId);
         const comunities = JSON.parse(await comunityClass.getAll(ctx));
         if (!exists) {
-            throw new Error(`The pod ${id} does not exist`);
+            throw new Error(`The pod ${params.podId} does not exist`);
         }
         //const comunities=comunity.getComunities();
-        let res;
         for (const comunity of comunities) {
             let pods = comunity.podList;
-            if (pods.includes(id)) {
-                res = comunity;
-                break;
+            if (pods.includes(params.podId) === true) {
+                await comunityClass.DeletePodFromComunity(ctx, params.podId, comunity.comunityId);
             }
         }
         return Promise.all([
-            comunityClass.DeletePodFromComunity(ctx, id, res.comunityId),
-            userClass.deletePodFromUser(ctx, id),
-            await ctx.stub.deleteState('pod-' + id).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; })
+            userClass.deletePodFromUsers(ctx, params.podId),
+            await ctx.stub.deleteState('pod-' + params.podId)
         ]).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
     async podUpdatePlant(ctx, param) {
@@ -230,16 +228,37 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
             throw new Error(`The pod ${exist.podId} does not exist`);
         }
         else {
-            exist.plantId = exist.plantId.concat(params.plant.plantId);
+            if (exist.plantIds.indexOf(params.plantId) !== -1)
+                return { status: asset_1.Status.Success, message: "Operazione effetuata" };
+            else {
+                exist.plantIds = exist.plantIds.concat(params.plantId);
+                return Promise.all([await ctx.stub.putState('pod-' + exist.podId, Buffer.from(JSON.stringify(exist)))])
+                    .then(() => { return { status: asset_1.Status.Success, message: "Operazione effetuata" }; });
+            }
+        }
+    }
+    async removePlantfromPod(ctx, param) {
+        const params = JSON.parse(param);
+        const plantClass = new plantCrontroller_1.PlantOperations();
+        const plant = await plantClass.get(ctx, params.plantId);
+        const exist = await this.get(ctx, params.podId);
+        if (!exist) {
+            throw new Error(`The pod ${exist.plantIds} does not exist`);
+        }
+        else if (!plant) {
+            throw new Error(`The plant ${exist.podId} does not exist`);
+        }
+        else {
+            exist.plantIds = exist.plantIds.filter((elem) => elem !== params.plantId);
             return Promise.all([await ctx.stub.putState('pod-' + exist.podId, Buffer.from(JSON.stringify(exist)))])
                 .then(() => { return { status: asset_1.Status.Success, message: "Operazione effetuata" }; });
         }
     }
     async removePlantfromPods(ctx, pods, plantId) {
-        for (const pod of pods) {
-            let exists = await this.get(ctx, pod);
+        for (let i = 0; i < pods.length; i++) {
+            var exists = await this.get(ctx, pods[i]);
             if (!exists) {
-                throw new Error(`The pod ${pod} does not exist`);
+                throw new Error(`The pod ${pods[i]} does not exist`);
             }
             else {
                 exists.plantIds = exists.plantIds.filter((elem) => elem !== plantId);
@@ -296,6 +315,12 @@ __decorate([
     __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
     __metadata("design:returntype", Promise)
 ], PodCrudOperations.prototype, "podUpdatePlant", null);
+__decorate([
+    fabric_contract_api_1.Transaction(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
+    __metadata("design:returntype", Promise)
+], PodCrudOperations.prototype, "removePlantfromPod", null);
 __decorate([
     fabric_contract_api_1.Transaction(),
     __metadata("design:type", Function),

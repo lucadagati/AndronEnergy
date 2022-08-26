@@ -74,15 +74,13 @@ let ComunityController = class ComunityController extends contractExtension_1.Co
     async DeletePodFromComunity(ctx, podId, comunityId) {
         const pod = new podController_1.PodCrudOperations();
         const exist = await pod.get(ctx, podId);
-        const comunity = await this.get(ctx, comunityId);
-        let podList = comunity.podList.filter((elem) => elem == podId);
+        let comunity = await this.get(ctx, comunityId);
+        let podList = comunity.podList.filter((elem) => elem === podId);
         if (!exist || podList.length === 0) {
-            throw new Error(`The pod ${podId}  does not exist in the comunity`);
+            throw new Error(`The pod ${podId} ${comunity.podList[comunity.podList.length - 1]} does not exist in the comunity`);
         }
         comunity.podList = comunity.podList.filter((elem) => elem != podId);
-        return Promise.all([
-            await ctx.stub.putState('comunity-' + comunity.comunityId, Buffer.from(JSON.stringify(comunity)))
-        ]).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
+        await ctx.stub.putState('comunity-' + comunity.comunityId, Buffer.from(JSON.stringify(comunity)));
     }
 };
 __decorate([

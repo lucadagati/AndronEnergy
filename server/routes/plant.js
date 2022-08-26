@@ -32,6 +32,23 @@ router.post('/Add',gatewayConnectionTetstChain,async(req,res)=>{
     }
 })
 
+
+router.post('/Delete',gatewayConnectionTetstChain,async(req,res)=>{
+    try {
+        let result= JSON.parse(Buffer.from(await contract.submitTransaction("plant:DeletePlant",JSON.stringify(req.body))).toString())
+        res.status(result.status==="error" ? 400 : 200).json(result);
+    } 
+    catch (error) {
+        console.error(`Failed to evaluate transaction: ${error}`);
+        res.status(500).json({status: "error", message: error});
+    }
+    finally{
+        await gateway.disconnect();
+    }
+})
+
+
+
 router.put('/Update/GeneratedEnergy/:id',gatewayConnectionTetstChain,async(req,res)=>{
     try {
             let result=JSON.parse(Buffer.from(await contract.submitTransaction(`plant:updateGeneratedEnergy`,req.params.id,JSON.stringify(req.body))).toString())

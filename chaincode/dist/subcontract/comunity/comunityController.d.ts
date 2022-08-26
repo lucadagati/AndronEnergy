@@ -6,5 +6,5 @@ export declare class ComunityController extends ContractExtension {
     getComunities(ctx: Context): Promise<void>;
     DeleteComunity(ctx: Context, id: string): Promise<Object>;
     addPodToComunity(ctx: Context, podId: string, comunityId: string): Promise<Object>;
-    DeletePodFromComunity(ctx: Context, podId: string, comunityId: string): Promise<Object>;
+    DeletePodFromComunity(ctx: Context, podId: string, comunityId: string): Promise<void>;
 }

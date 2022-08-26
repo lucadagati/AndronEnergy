@@ -43,27 +43,27 @@ let PlantOperations = class PlantOperations extends contractExtension_1.Contract
         return Promise.all([await ctx.stub.putState(plant.type + "-" + plant.plantId, Buffer.from(JSON.stringify(plant)))])
             .then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
-    async DeletePlant(ctx, id) {
+    async DeletePlant(ctx, param) {
         // const comunityClass=new ComunityController();
+        const params = JSON.parse(param);
         const podClass = new podController_1.PodCrudOperations();
-        const exists = await this.get(ctx, id);
+        const exists = await this.get(ctx, params.plantId);
         const pods = JSON.parse(await podClass.getAll(ctx));
         if (!exists) {
-            throw new Error(`The plant ${id} does not exist`);
+            throw new Error(`The plant ${params.plantId} does not exist`);
         }
         //const comunities=comunity.getComunities();
-        let res;
+        let res = [];
         for (const pod of pods) {
             let plants = pod.plantIds;
-            if (pods.includes(id)) {
-                res = res.concat(plants);
-                break;
+            if (plants.includes(params.plantId)) {
+                res = res.concat(pod.podId);
             }
         }
         return Promise.all([
             //comunityClass.DeletePodFromComunity(ctx,id,res.comunityId),
-            podClass.removePlantfromPods(ctx, res, id),
-            await ctx.stub.deleteState('plant-' + id).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; })
+            await podClass.removePlantfromPods(ctx, res, params.plantId),
+            await ctx.stub.deleteState('plant-' + params.plantId)
         ]).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
 };

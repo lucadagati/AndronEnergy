@@ -47,28 +47,28 @@ export class PlantOperations extends ContractExtension{
     }
 
     @Transaction()
-    public async DeletePlant(ctx: Context, id: string): Promise<Object> {
+    public async DeletePlant(ctx: Context, param: string): Promise<Object> {
        // const comunityClass=new ComunityController();
+       const params=JSON.parse(param)
        const podClass=new PodCrudOperations()
-        const exists= await this.get(ctx, id);
+        const exists= await this.get(ctx, params.plantId);
         const pods:any=JSON.parse(await podClass.getAll(ctx));
         if (!exists) {
-            throw new Error(`The plant ${id} does not exist`);
+            throw new Error(`The plant ${params.plantId} does not exist`);
         }
 
         //const comunities=comunity.getComunities();
-        let res:any;
+        let res:any=[];
         for(const pod of pods){
              let plants=pod.plantIds;
-             if (pods.includes(id)){
-                res=res.concat(plants);
-                break;
+             if (plants.includes(params.plantId)){
+                res=res.concat(pod.podId);
             }
         }
         return Promise.all([
             //comunityClass.DeletePodFromComunity(ctx,id,res.comunityId),
-            podClass.removePlantfromPods(ctx,res,id),
-            await ctx.stub.deleteState('plant-'+id).then(()=>{return {status: Status.Success , message:"Operazione effettuata"}})
+            await podClass.removePlantfromPods(ctx,res,params.plantId),
+            await ctx.stub.deleteState('plant-'+params.plantId)
            ]).then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});
         }
 

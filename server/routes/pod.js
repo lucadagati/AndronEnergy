@@ -18,7 +18,6 @@ const gatewayConnectionTetstChain= async (req,res,next)=>{
 
 
 router.post('/Add',gatewayConnectionTetstChain,async(req,res)=>{
-    res.set('Access-Control-Allow-Origin', '*');
     try {
         console.log(JSON.stringify(req.body));
         let result= JSON.parse(Buffer.from(await contract.submitTransaction("pod:CreatePod",JSON.stringify(req.body))).toString())
@@ -37,7 +36,6 @@ router.post('/Add',gatewayConnectionTetstChain,async(req,res)=>{
 })
 
 router.put('/Update/:updateElem/:id',gatewayConnectionTetstChain,async(req,res)=>{
-    res.set('Access-Control-Allow-Origin', '*');
     try {
         console.log(req.params.id,req.body);
         console.log(JSON.stringify(req.body));
@@ -65,9 +63,11 @@ router.put('/Update/:updateElem/:id',gatewayConnectionTetstChain,async(req,res)=
 })
 
 
-router.post('/removePlantfromPods/',gatewayConnectionTetstChain,async(req,res)=>{
+
+
+router.post('/removePlantfromPod',gatewayConnectionTetstChain,async(req,res)=>{
     try{       
-        let result= JSON.parse(Buffer.from(await contract.submitTransaction("pod:removePlantfromPods",req.body.pods,req.body.plantId)).toString())
+        let result= JSON.parse(Buffer.from(await contract.submitTransaction("pod:removePlantfromPod",JSON.stringify(req.body))).toString())
         res.status(200).json({
             status : 200,
             message : result
@@ -102,13 +102,12 @@ router.post('/updatePodPlant/',async(req,res)=>{
     }
 })
 
-router.get('/Delete/:id',gatewayConnectionTetstChain,async(req,res)=>{
+router.post('/Delete/',gatewayConnectionTetstChain,async(req,res)=>{
  
     try {
-        res.set('Access-Control-Allow-Origin', '*');
-        let elem = req.params.id;
-        console.log(elem)
-        let result= JSON.parse(Buffer.from(await contract.submitTransaction("pod:DeletePod",elem)).toString())
+        //let elem = req.params.id;
+        console.log(req.body);
+        let result= JSON.parse(Buffer.from(await contract.submitTransaction("pod:DeletePod",JSON.stringify(req.body))).toString())
         res.status(200).json({
                 status : 200,
                 message : result

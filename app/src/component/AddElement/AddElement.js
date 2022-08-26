@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { text_control,select_control } from '../../functions/formControl';
+//import { text_control,select_control } from '../../functions/formControl';
 import useAuth from '../../context/useAuth';
 
 
@@ -13,22 +13,30 @@ function AddElement(props){
     const [error3,setError3]=useState(false);
     const [comunities,setComunities]=useState();
     const [plants,setPlants]=useState();
+    const [plant,setPlant]=useState();
     const [pods,setPods]=useState();
     const auth=useAuth();
 
     const reg=/pod|comunity|plant|user/g
 
     const add=async()=>{
-        props.result_fun(()=>undefined);
         let body={}
         body={
                 ...(elem &&{"podId":elem}),
                 ...(comunity && {"comunityId":comunity}),
-                ...(plants && {"plantId":plants})
+                ...(plant && {"plantId":plant})
             };
 
-            props.addFunction(body);
-
+        let regex=/Pod[0-9] Plants/g;
+        if(props.type.match(regex)){
+            let val=props.type.split(' ');
+            body['podId']=val[0];
+        }
+        console.log(body)
+        props.setLoading(true);
+        let result=await props.addFunction(body,auth.auth.accessToken,props.type);
+        if(result.status===200)
+            window.location.reload();
         }
             /*add_elem(props.type,body).then((res)=>{
             if(res)
@@ -39,7 +47,7 @@ function AddElement(props){
     
     useEffect(()=>{
         if(props.comunities){
-            console.log(props.comunities)
+            //console.log(props.data)
 
             const selection=()=>{
                 let comunities=props.comunities.map((val)=>{
@@ -50,14 +58,14 @@ function AddElement(props){
             selection();
         }
         if(props.plants){
-            console.log(props.plants)
+            //console.log(props.plants)
             let plants=props.plants.map((val)=>{
                 return <option key={val} value={val}>{val}</option>
             });
             setPlants(()=>plants);  
         }
         if(props.pods){
-            console.log(props.pods);
+            //console.log(props.pods);
             let pods=props.pods.map((val)=>{
                 return <option key={val} value={val}>{val}</option>
             });
@@ -67,7 +75,7 @@ function AddElement(props){
 
     const handleSubmit=(event)=>{
         event.preventDefault();
-        if(elem){
+        /*if(elem){
             setElem(()=>elem.charAt(0).toUpperCase() + elem.slice(1));
         }
         let res1=text_control(elem);
@@ -84,7 +92,7 @@ function AddElement(props){
         if(res3.length>0){
             setError3(()=>res3)
             return
-        }
+        }*/
         add();
         
 
@@ -119,7 +127,7 @@ function AddElement(props){
                 {plants  ?
                     (<Form.Group>
                     <Form.Label>Plants</Form.Label>
-                    <Form.Select aria-label="plants" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError3("");setPlants(()=>event.target.value)}} className="mb-3">
+                    <Form.Select aria-label="plants" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError3("");setPlant(()=>event.target.value)}} className="mb-3">
                         <option value="Seleziona">Seleziona</option>
                         {plants}
                     </Form.Select>
@@ -132,7 +140,7 @@ function AddElement(props){
                 {props.type==='userConsumption' ?
                         (<Form.Group>
                             <Form.Label>Pods</Form.Label>
-                            <Form.Select aria-label="plants" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError3("");setPlants(()=>event.target.value)}} className="mb-3">
+                            <Form.Select aria-label="pods" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError3("");setPods(()=>event.target.value)}} className="mb-3">
                                 <option value="Seleziona">Seleziona</option>
                                 {pods}
                             </Form.Select>

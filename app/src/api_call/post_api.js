@@ -1,12 +1,13 @@
 import axios from "./axios";
 
-export async function add_elem(type,obj,token){
+export async function add_elem(obj,token,type){
 
     try{
-        await fetch(`http://localhost:8060/${type}Op/Add`,JSON.stringify(obj),{
+        let res=await axios.post(`${type}Op/Add`,JSON.stringify(obj),{
             headers: { 'Authorization': `Bearer ${token}` ,'Content-Type': 'application/json' },
             withCredentials: true
         });
+        return res;
     }
     catch (err) {
         if(err.response?.status===500){
@@ -18,14 +19,16 @@ export async function add_elem(type,obj,token){
 }
 
 
-export async function delete_elem(type,id,token){
+export async function delete_elem(type,body,token){
     
     try{
-        await axios.post(`${type}Op/Delete/`+id,
+        console.log(body)
+        let res=await axios.post(`${type}Op/Delete/`,JSON.stringify(body),
         {
             headers: { 'Authorization': `Bearer ${token}` ,'Content-Type': 'application/json' },
             withCredentials: true
         });
+        return res;
     }
     catch (err) {
         if(err.response?.status===500){

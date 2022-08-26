@@ -4,5 +4,5 @@ export declare class PlantOperations extends ContractExtension {
     constructor();
     CreatePlant(ctx: Context, param: string): Promise<Object>;
     updateGeneratedEnergy(ctx: Context, id: string, param: string): Promise<Object>;
-    DeletePlant(ctx: Context, id: string): Promise<Object>;
+    DeletePlant(ctx: Context, param: string): Promise<Object>;
 }

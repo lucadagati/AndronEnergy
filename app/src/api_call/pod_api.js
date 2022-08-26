@@ -5,14 +5,15 @@ import axios from "./axios";
 
 
 
-export async function updatePodPlant(obj){
+export async function updatePodPlant(obj,token){
     try{
-        await axios.post('podOp/updatePodPlant',JSON.stringify(obj),
+        let res=await axios.post('podOp/updatePodPlant',JSON.stringify(obj),
         {
-            headers: {'Content-Type': 'application/json' },
+            headers: { 'Authorization': `Bearer ${token}`,'Content-Type': 'application/json' },
             withCredentials: true
         });
         //console.log(res);
+        return res;
         }
 
     catch (err) {
@@ -24,13 +25,15 @@ export async function updatePodPlant(obj){
 }
 
 
-export async function removePlantfromPods(obj){
+export async function removePlantfromPod(obj,token){
     try{
-        await axios.post('podOp/removePlantfromPods',JSON.stringify(obj),
+        console.log(obj)
+       let res= await axios.post('podOp/removePlantfromPod',JSON.stringify(obj),
         {
-            headers: {'Content-Type': 'application/json' },
+            headers: { 'Authorization': `Bearer ${token}`,'Content-Type': 'application/json' },
             withCredentials: true
         });
+        return res;
         //console.log(res);
         }
 
@@ -42,11 +45,11 @@ export async function removePlantfromPods(obj){
     }
 }
 
-export async function add_pod(pod_obj){
+export async function add_pod(pod_obj,token){
 
     try{
         axios.post('podOp/Add',JSON.stringify(pod_obj),{
-            headers: {'Content-Type': 'application/json' },
+            headers: { 'Authorization': `Bearer ${token}`,'Content-Type': 'application/json' },
             withCredentials: true
         });
     }
