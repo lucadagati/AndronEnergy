@@ -3,7 +3,7 @@ import Nav from 'react-bootstrap/Nav';
 import { Navbar } from "react-bootstrap"
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Container from 'react-bootstrap/Container';
-import useAuth from '../../context/useAuth';
+import useAuth from '../../context/auth/useAuth';
 import { useEffect } from 'react';
 import useLogout from '../../functions/logout';
 

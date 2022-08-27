@@ -19,7 +19,19 @@ const gatewayConnectionTetstChain= async (req,res,next)=>{
 
 router.post('/Add',gatewayConnectionTetstChain,async(req,res)=>{
     try {
-        console.log(JSON.stringify(req.body));
+
+        let control=/[.,/#!$%^&*;:{}=\-_`'"~()\s]/g;
+        let char_check=/[a-zA-Z]/g;
+        if(req.body.podId===undefined || req.body.podId.match(char_check) || !req.body.podId.match(control)){
+            return res.status(400).json({error: "Errore nell' id del pod"});
+        }
+        else if(req.body.cmunityId===undefined || req.body.cmunityId==="Seleziona"){
+            return res.status(400).json({error: "Errore nell' id della comunità"});
+        }
+        else if(req.body.plantId===undefined || req.body.plantId==="Seleziona"){
+            return res.status(400).json({error: "Errore nell' id del plant"});
+        }
+
         let result= JSON.parse(Buffer.from(await contract.submitTransaction("pod:CreatePod",JSON.stringify(req.body))).toString())
         res.status(200).json({
             status : 200,

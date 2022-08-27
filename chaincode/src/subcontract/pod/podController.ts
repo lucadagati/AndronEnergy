@@ -103,28 +103,31 @@ export class PodCrudOperations extends ContractExtension{
     @Transaction(true)
     public async CreatePod(ctx:Context,param:string):Promise<Object>{
         const comunityClass=new ComunityController();
+        const plantClass=new PlantOperations();
         const params = JSON.parse(param);
         const pod_exist = await this.get(ctx,params.podId)as PodStruct;
         const comunity_exist:any=await comunityClass.get(ctx,params.comunityId);
-
+        const plant_exist:any=await plantClass.get(ctx,params.plantId);
         if(pod_exist.podId!=undefined){
             throw new Error("The pod  with id:"+pod_exist.podId+" already exists");
             }
         if(!comunity_exist){
             throw new Error("The comunity  with id:"+comunity_exist.comunityId+" does not exists");
         }
+        if(!plant_exist){
+            throw new Error("The plant with id: " + plant_exist.plantId+" does not exist");
+        }
         const pod:PodStruct={
             type:"pod",
             podId:params.podId,
-            plantIds:params.platIds,
+            plantIds:[params.plantId],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
             offgrid:'' ,
         };
-
         return Promise.all([
         await ctx.stub.putState('pod'+'-'+pod.podId, Buffer.from(JSON.stringify(pod))),
-        comunityClass.addPodToComunity(ctx,params.podId,params.comunityId)
+        await comunityClass.addPodToComunity(ctx,params.podId,params.comunityId),
         ]).then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});
     }
 

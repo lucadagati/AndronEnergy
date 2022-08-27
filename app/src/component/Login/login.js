@@ -4,8 +4,8 @@ import Button from 'react-bootstrap/Button';
 import './login.css';
 import { useEffect, useState } from 'react';
 import { login } from '../../api_call/login_api';
-import useAuth from '../../context/useAuth';
 import {useLocation, useNavigate } from 'react-router-dom';
+import useAuth from '../../context/auth/useAuth';
 
 function Login(){
 

@@ -6,6 +6,7 @@ import Login from './component/Login/login';
 import AuthRequired from './component/authRequired';
 import Register from './component/Register/Register';
 import PersistantLogin from './component/Login/persistantLogin/persistantLogin';
+import Error from './component/Error/Error';
 
 function App() {
 
@@ -36,6 +37,7 @@ function App() {
         <Route path="/register" element={<Register/>}/>
         </Route>
         </Route>
+        <Route path="/404" element={<Error/>}/>
       </Routes>
       </BrowserRouter>
     </div>
