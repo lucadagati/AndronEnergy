@@ -16,9 +16,9 @@ export  async function removeUserPod(body,token){
 
     catch (err){
         if(err.response?.status===500){
-            return {error:"Qualcosa è andato storto"};
+            return {error:err.response.data.message.responses[0].response.message};
         }
-        else return {error:err.message};
+        else return {error:err.response.data.error};
     }
 }
 
@@ -35,8 +35,8 @@ export  async function updateUserPod(body,token){
 
     catch (err){
         if(err.response?.status===500){
-            return {error:"Qualcosa è andato storto"};
+            return {error:err.response.data.message.responses[0].response.message};
         }
-        else return {error:err.message};
+        else return {error:err.response.data.error};
     }
 }

@@ -14,16 +14,20 @@ import { add_elem } from "../../api_call/post_api";
 //import useGeneral from "../../context/general/useGeneral";
 import useSections from "../../context/auth/sectionFlag/useSections";
 
-export async function remove_data_from_table(type,id,setFunction,token){
+export async function remove_data_from_table(type,id,setFunction,token,sections){
         setFunction(()=>undefined);
         //console.log(id)
         let body={
         }
         body[type+'Id']=id;
-        let res= await delete_elem(type,body,token);
-        console.log(res)
-        if(res.status===200){
+        let result= await delete_elem(type,body,token);
+        if(result.status===200){
             window.location.reload();
+            }
+        else{
+            sections.setLoading(false);
+            sections.setError(true);
+            sections.setErrorMessage(result.error)
             }
         }
 
@@ -44,6 +48,11 @@ export async function get_table(type,general,sections,set_data,token,pods){
                 if(result.status===200)
                     window.location.reload();
                 //window.location.reload();
+                else{
+                    sections.setLoading(false);
+                    sections.setError(true);
+                    sections.setErrorMessage(result.error);
+                }
             }
             else return;
 
@@ -88,6 +97,12 @@ export async function get_table(type,general,sections,set_data,token,pods){
                                                         let result=await removeUserPod(body,token);
                                                         if(result.status===200)
                                                             window.location.reload();
+                                                        else{
+                                                            sections.setLoading(false);
+                                                            sections.setError(true);
+                                                            sections.setErrorMessage(result.error);
+
+                                                        }
                                                         //setTable(()=>undefined);
                                                         }}> 
                                                             <Minus style={{width:"20px",height:"20px"}}/>
@@ -120,8 +135,8 @@ export async function get_table(type,general,sections,set_data,token,pods){
                                         <button type="button" onClick={()=>{
                                             let res=search_pattern(val); 
                                             if(val===res){
-                                                remove_data_from_table(type,val,general.setTable,token)}
-                                            else remove_data_from_table(type,val[res],general.setTable,token)}}
+                                                remove_data_from_table(type,val,general.setTable,token,sections)}
+                                            else remove_data_from_table(type,val[res],general.setTable,token,sections)}}
                                             className="btn btn-sm btn-danger" style={{"marginLeft":"15px"}}>
                                             <Trash/>
                                         </button>
@@ -140,7 +155,7 @@ export async function get_table(type,general,sections,set_data,token,pods){
         
     
 }
-export function static_table(list,remove,title,setError,token,setLoading){
+export function static_table(list,remove,title,sections,token,setLoading){
     let table_fields=list.map((val,key)=>{
         return(
             <tr key={key+val}>
@@ -156,6 +171,11 @@ export function static_table(list,remove,title,setError,token,setLoading){
                             if(result.status===200)
                                 //setError(true);
                                 window.location.reload();
+                            else{
+                                sections.setLoading(false);
+                                sections.setError(true);
+                                sections.setErrorMessage(result.error);
+                            }
                         }    
                         }} style={{"marginLeft":"15px"}}><Trash/></button>
                 </td>)
@@ -172,7 +192,6 @@ export function static_table(list,remove,title,setError,token,setLoading){
 export function RenderList(props){
     const sections=useSections();
     //const general=useGeneral();
-    console.log(sections.add)
 
     return (
        props.info ?  (<AddElement data={props.data} pods={props.pods} addFunction={add_elem} />):(

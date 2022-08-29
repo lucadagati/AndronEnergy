@@ -25,9 +25,11 @@ function AddElement(props){
 
     const add=async()=>{
         let body={}
+        console.log(elem);
         body={
                 ...(general.type==="userConsumption"&& elem &&{"userConsumptionId":elem}),
                 ...(general.type==="pod"&&elem &&{"podId":elem}),
+                ...(general.type==="plant"&&elem &&{"plantId":elem}),
                 ...(general.type==="comunity" && elem && {comunityId:elem}),
                 ...(comunity && {"comunityId":comunity}),
                 ...(plant && {"plantId":plant}),
@@ -38,16 +40,19 @@ function AddElement(props){
             let val=general.type.split(' ');
             body['podId']=val[0];
         }
-        console.log(body)
         sections.setLoading(true);
         let result=await props.addFunction(body,auth.auth.accessToken,general.type);
         if(result.status===200)
             window.location.reload();
+        else{
+            sections.setError(true);
+            sections.setErrorMessage(result.error);
+            //sections.setLoading(false);
+            }
 
         }
 
     useEffect(()=>{
-        console.log(general.comunities)
         if(props.comunities){
             //console.log(props.data)
 
@@ -73,6 +78,7 @@ function AddElement(props){
             });
             setPods(()=>pods)
         }
+        // eslint-disable-next-line
     },[props.comunities,props.plants,props.pods])
 
     const handleSubmit=(event)=>{
@@ -96,8 +102,6 @@ function AddElement(props){
             return
         }
         add();
-        
-
 
     }
     return(
@@ -153,6 +157,9 @@ function AddElement(props){
             
             <Button variant="primary" style={{"float":"right"}} className="btn btn-sm btn-primary btn-rounded"type="submit" value="Submit">
             Aggiungi
+            </Button>
+            <Button variant="primary" style={{"float":"right",marginRight:"20px"}} className="btn btn-sm btn-danger btn-rounded" onClick={()=>sections.setAdd(false)}>
+            Annulla
             </Button>
         </Form>
       </div>

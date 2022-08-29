@@ -20,10 +20,10 @@ export  async function get(endpoints,token){
     } catch (err) {
         // Handle Error Here
         if(err.status===500){
-            return {error:"Qualcosa è andato storto"}
+            return {error:err.response.data.message.responses[0].response.message}
         }
         else{
-            return {error:err}
+            return {error:err.response.data.error}
 
         }
     }

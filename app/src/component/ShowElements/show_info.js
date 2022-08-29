@@ -57,7 +57,7 @@ function ShowInfo(props){
             // eslint-disable-next-line
             let [plantList,energyData,title]=filter_data(props.elem);
             setPlot(()=><PlotData elem={energyData} type={props.type} title_list={title}/>)
-            let table=static_table(plantList,true,title,sections.setError,auth.auth.accessToken,sections.setLoading);
+            let table=static_table(plantList,true,title,sections,auth.auth.accessToken,sections.setLoading);
             setRendering(()=><RenderList result={table} static={0}  plants={general.plants} type={title+" Plants"}  addFunction={updatePodPlant}/>)
 
 

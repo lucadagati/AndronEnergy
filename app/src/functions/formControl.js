@@ -1,7 +1,7 @@
 
 export function text_control(elem){
     let res1='';
-    let control=/[.,/#!$%^&*;:{}=\ _`'"~()\s]/g;
+    let control=/[.,/#!$%^&*;:{}= _`'"~()\s]/g;
     let char_check=/[a-zA-Z]/g;
     let res2=elem.match(char_check);
     res1=elem.match(control);

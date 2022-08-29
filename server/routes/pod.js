@@ -22,10 +22,10 @@ router.post('/Add',gatewayConnectionTetstChain,async(req,res)=>{
 
         let control=/[.,/#!$%^&*;:{}=\-_`'"~()\s]/g;
         let char_check=/[a-zA-Z]/g;
-        if(req.body.podId===undefined || req.body.podId.match(char_check) || !req.body.podId.match(control)){
+        if(req.body.podId===undefined ||!req.body.podId.match(char_check) || req.body.podId.match(control)){
             return res.status(400).json({error: "Errore nell' id del pod"});
         }
-        else if(req.body.cmunityId===undefined || req.body.cmunityId==="Seleziona"){
+        else if(req.body.comunityId===undefined || req.body.cmunityId==="Seleziona"){
             return res.status(400).json({error: "Errore nell' id della comunità"});
         }
         else if(req.body.plantId===undefined || req.body.plantId==="Seleziona"){

@@ -3,15 +3,26 @@
     margin-top:100px;
     padding: 20px;
     width: 45%;
-    height: 30%;
-    min-height: 250px;
+    height: auto ;
     min-width: 300px;
     background-color: #FFBABA;
     border-radius: 10px;
     border: 1px solid rgb(233, 233, 227);
+    overflow: hidden;
+    }
+
+@media (min-width:1000px){
+    .Error{
+        min-height: 240px;
+    }
+    }
 
 
-}
+
+
+
+
+
 
 /*.Error .btn-secondary{
     border-radius:"50px";    
