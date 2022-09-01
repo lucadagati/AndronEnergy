@@ -33,13 +33,17 @@ function AddElement(props){
                 ...(general.type==="comunity" && elem && {comunityId:elem}),
                 ...(comunity && {"comunityId":comunity}),
                 ...(plant && {"plantId":plant}),
-                ...(pod && {"podId":pod})
+                ...(pod && {"podId":pod}),
             };
+        if(!props.type.match(reg)){
+            body[props.type.split(" ")[0].toLowerCase().replace(/[0-9]/g,'Id')]=props.type.split(" ")[0]
+        }
         let regex=/Pod[0-9] Plants/g;
         if(general.type.match(regex)){
             let val=general.type.split(' ');
             body['podId']=val[0];
         }
+        console.log(body);
         sections.setLoading(true);
         let result=await props.addFunction(body,auth.auth.accessToken,general.type);
         if(result.status===200)
@@ -86,10 +90,11 @@ function AddElement(props){
         if(elem){
             setElem(()=>elem.charAt(0).toUpperCase() + elem.slice(1));
         }
-        let res1=text_control(elem);
+        let res1=props.type.match(reg)? (text_control(elem)) : ("");
         let res2=comunity?(select_control(comunity,"comunity")):("");
         let res3=(plant || pod)?(select_control((plant?(plant):(pod)),(plant?('impianto'):('pod')))):("");
         if(res1.length>0){
+            console.log(res1)
             setError(()=>res1);
             return
         }
@@ -106,6 +111,7 @@ function AddElement(props){
     }
     return(
         <div className='form'style={{marginTop:"40px",height:"auto"}} >
+            <p style={{color:"red"}}>{error}</p>    
             <Form onSubmit={handleSubmit}>
 
             {props.type.match(reg)?    
@@ -113,8 +119,8 @@ function AddElement(props){
                 <Form.Label>{general.type} Id</Form.Label>
                 <Form.Control type="text"style={{ fontSize: 12, padding: 6,width:"100%" }} placeholder="Nome" 
                     onChange={(event)=>{setError('');setElem(()=>event.target.value)}} value={elem}/>
-                <p style={{color:"red"}}>{error}</p>    
-                </Form.Group>)
+                </Form.Group>
+                )
             :
                 (undefined)
             }
@@ -158,7 +164,7 @@ function AddElement(props){
             <Button variant="primary" style={{"float":"right"}} className="btn btn-sm btn-primary btn-rounded"type="submit" value="Submit">
             Aggiungi
             </Button>
-            <Button variant="primary" style={{"float":"right",marginRight:"20px"}} className="btn btn-sm btn-danger btn-rounded" onClick={()=>sections.setAdd(false)}>
+            <Button variant="secondary" style={{"float":"right",marginRight:"20px"}} className="btn btn-sm btn-secondary btn-rounded" onClick={()=>sections.setAdd(false)}>
             Annulla
             </Button>
         </Form>

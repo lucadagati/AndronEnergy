@@ -99,6 +99,16 @@ public async deletePodFromUsers(ctx:Context,podId:string):Promise<void>{
         }
     }
 
-
+    @Transaction(true)
+    public async deleteUsers(ctx:Context,param:string):Promise<Object>{
+        const params=JSON.parse(param);
+        const exists = await this.get(ctx,params.userConsumptionId);
+        if (!exists) {
+            throw new Error(`The user ${params.userConsumptionid} does not exist`);
+        }
+        return Promise.all([
+        await ctx.stub.deleteState('userConsumption-'+params.userConsumptionid)
+        ]).then(()=>{return {status: Status.Success , message:"Operazione effettuata"}})
+        }
 
 }

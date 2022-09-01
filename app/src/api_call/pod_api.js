@@ -20,7 +20,7 @@ export async function updatePodPlant(obj,token){
         if(err.response?.status===500){
             return {error:err.response.data.message.responses[0].response.message};
         }
-        else return {error:err.response.data.error};
+        else return {error:err.response?(err.response.data.error):"Errore"};
     }
 }
 
@@ -41,7 +41,7 @@ export async function removePlantfromPod(obj,token){
         if(err.response?.status===500){
             return {error:err.response.data.message.responses[0].response.message};
         }
-        else return {error:err.response.data.error};
+        else return {error:err.response?(err.response.data.error):"Errore"};
     }
 }
 
@@ -57,7 +57,7 @@ export async function add_pod(pod_obj,token){
         if(err.response?.status===500){
             return {error:err.response.data.message.responses[0].response.message};
         }
-        else return {error:err.response.data.error};
+        else return {error:err.response?(err.response.data.error):"Errore"};
     }
 
 

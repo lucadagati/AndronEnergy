@@ -26,12 +26,15 @@ export function text_control(elem){
     export function select_control(elem,type){
         console.log(elem)
         if(!elem){
+            console.log(1)
             return  "Devi selezionare un "+type;;
         }
         if(elem==="Seleziona"){
+            console.log(2)
             return "Devi selezionare un "+type;
         }
         else {
+            console.log(3)
             return '';
         }
     }

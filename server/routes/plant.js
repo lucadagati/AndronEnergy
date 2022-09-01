@@ -21,7 +21,6 @@ router.post('/Add',gatewayConnectionTetstChain,async(req,res)=>{
     try {
         let control=/[.,/#!$%^&*;:{}=\-_`'"~()\s]/g;
         let char_check=/[a-zA-Z]/g;
-        console.log(req.body)
         if(req.body.plantId===undefined || (!req.body.plantId.match(char_check || req.body.plantId.match(control))) ){
             return res.status(400).json({error: "Errore nell' id del plant"});
         }

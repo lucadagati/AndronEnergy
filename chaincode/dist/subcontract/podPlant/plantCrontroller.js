@@ -23,7 +23,7 @@ let PlantOperations = class PlantOperations extends contractExtension_1.Contract
         const params = JSON.parse(param);
         const exist = await this.get(ctx, params.plantId);
         if (exist.plantId) {
-            throw new Error("The palnt with id:" + params.podId + " already exists");
+            throw new Error("The plant with id:" + params.plantId + " already exists");
         }
         const plant = {
             plantId: params.plantId,

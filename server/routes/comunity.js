@@ -36,9 +36,7 @@ router.post('/Add',gatewayConnectionTetstChain,async(req,res)=>{
 router.post('/Delete/:comunityId',gatewayConnectionTetstChain,async(req,res)=>{
     
     try {
-        let id=req.params.comunityId
-        console.log('');
-        let result= JSON.parse(Buffer.from(await contract.submitTransaction("comunity:DeleteComunity",id)).toString())
+        let result= JSON.parse(Buffer.from(await contract.submitTransaction("comunity:DeleteComunity",JSON.stringify(req.body))).toString())
         res.status(result.status==="error" ? 400 : 200).json(result);
     } 
     catch (error) {

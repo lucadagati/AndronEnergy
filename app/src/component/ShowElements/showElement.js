@@ -74,7 +74,6 @@ export default function ShowElement(props){
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[props])
-
     return (
         
         general.table && !sections.loading ?(<div className="showElement">

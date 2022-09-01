@@ -22,7 +22,6 @@ export async function add_elem(obj,token,type){
 export async function delete_elem(type,body,token){
     
     try{
-        console.log(body)
         let res=await axios.post(`${type}Op/Delete/`,JSON.stringify(body),
         {
             headers: { 'Authorization': `Bearer ${token}` ,'Content-Type': 'application/json' },
@@ -34,7 +33,14 @@ export async function delete_elem(type,body,token){
         if(err.response?.status===500){
             return {error:err.response.data.message.responses[0].response.message};
         }
-        else return {error:err.response.data.error};
+        else {
+            let error={}
+            if(err.response.data.error){
+                error["error"]=err.response.data.error;
+            }
+            else error["error"]="Errore";
+            return error;
+        }
     }
 
 }

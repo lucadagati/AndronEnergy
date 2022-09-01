@@ -11,21 +11,21 @@ import { removeUserPod } from "../../api_call/userConsumption_api";
 import { Form } from "react-bootstrap";
 import { updateUserPod } from "../../api_call/userConsumption_api";
 import { add_elem } from "../../api_call/post_api";
-//import useGeneral from "../../context/general/useGeneral";
+import useGeneral from "../../context/general/useGeneral";
 import useSections from "../../context/auth/sectionFlag/useSections";
 
 export async function remove_data_from_table(type,id,setFunction,token,sections){
-        setFunction(()=>undefined);
+        //setFunction(()=>undefined);
         //console.log(id)
         let body={
         }
         body[type+'Id']=id;
+        sections.setLoading(true);
         let result= await delete_elem(type,body,token);
         if(result.status===200){
             window.location.reload();
             }
         else{
-            sections.setLoading(false);
             sections.setError(true);
             sections.setErrorMessage(result.error)
             }
@@ -65,11 +65,12 @@ export async function get_table(type,general,sections,set_data,token,pods){
         let podsSelect=pods?.map((val)=>{
             return <option key={val} value={val}>{val}</option>
         });
-        const search_pattern=(elem)=>{
+        const search_pattern=(type,elem)=>{
             if(typeof elem=== 'object'&&!Array.isArray(elem) && elem!== null){
-                let regex=/Id$/g;
+                let key=type+'Id';
+                //let regex=/Id$/g;
                 let res=Object.keys(elem);
-                res=res.filter((val)=>val.match(regex))
+                res=res.filter((val)=>val.match(key))
                 return res;
             }
             else return elem;
@@ -133,10 +134,11 @@ export async function get_table(type,general,sections,set_data,token,pods){
                                         }
                                         <td style={{"width":"80px"}} key={key+'delete_button'}>
                                         <button type="button" onClick={()=>{
-                                            let res=search_pattern(val); 
-                                            if(val===res){
-                                                remove_data_from_table(type,val,general.setTable,token,sections)}
-                                            else remove_data_from_table(type,val[res],general.setTable,token,sections)}}
+                                            let res=search_pattern(type,val); 
+                                            if(val[res]){
+                                                remove_data_from_table(type,val[res],general.setTable,token,sections)
+                                            }
+                                            else remove_data_from_table(type,val,general.setTable,token,sections)}}
                                             className="btn btn-sm btn-danger" style={{"marginLeft":"15px"}}>
                                             <Trash/>
                                         </button>
@@ -191,8 +193,8 @@ export function static_table(list,remove,title,sections,token,setLoading){
 
 export function RenderList(props){
     const sections=useSections();
-    //const general=useGeneral();
-
+    const general=useGeneral();
+    const addFun=props.addFunction?(props.addFunction):(add_elem);
     return (
        props.info ?  (<AddElement data={props.data} pods={props.pods} addFunction={add_elem} />):(
        <div className='table_styling'  style={{width:"63%",minWidth:"300px",backgroundColor:"#f8f9fa"}}>
@@ -203,7 +205,7 @@ export function RenderList(props){
                     <tr>
                         <th>{capitalize(props.type.replace(/([A-Z])/g, ' $1').trim())} Id</th>
                         {props.type==='userConsumption'?(<th>{capitalize(props.type.replace(/([A-Z])/g, ' $1').trim())} Pods</th>):(undefined)}
-                        {!props.static && <th>Rimuovi</th>}
+                        {!props.static && <th>Rimuovi {general.type==="userConsumption"?("User"):(undefined)}</th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -216,7 +218,7 @@ export function RenderList(props){
                 <thead>
                     <tr>
                         <th>{props.type} </th>
-                        {!props.static && <th>Rimuovi</th>}
+                        {!props.static && <th>Rimuovi {general.type==="userConsumption"?(general.type.split(" ")[0]):(undefined)}</th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -228,7 +230,7 @@ export function RenderList(props){
             {!sections.add  && !props.static && <button type="button"className="btn btn-sm btn-primary btn-rounded" style={{"float":"right"}} onClick={()=>sections.setAdd(()=>true)}>Aggiungi</button>}
             {sections.add ? 
                 (<div style={{width:"100%",margin:"auto",marginTop:"20px",backgroundColor:"#f8f9fa"}}>
-                    <AddElement comunities={props.comunities} pods ={props.pods}  plants={props.plants} type={props.type} addFunction={add_elem} /></div>)
+                    <AddElement comunities={props.comunities} pods ={props.pods}  plants={props.plants} type={props.type} addFunction={addFun} /></div>)
                 :
                 (undefined)}
         </div>)

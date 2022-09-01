@@ -42,13 +42,14 @@ export class ComunityController extends ContractExtension{
 
     // DeleteAsset deletes an given asset from the world state.
     @Transaction()
-    public async DeleteComunity(ctx: Context, id: string): Promise<Object> {
-        const exists = await this.get(ctx,'comunity-'+ id);
+    public async DeleteComunity(ctx: Context, param: string): Promise<Object> {
+        const params=JSON.parse(param)
+        const exists = await this.get(ctx,params.comunityId);
         if (!exists) {
-            throw new Error(`The comunity ${id} does not exist`);
+            throw new Error(`The comunity ${params.comunityId} does not exist`);
         }
         return Promise.all([
-        await ctx.stub.deleteState('comunity-'+id)
+        await ctx.stub.deleteState("userConsumption-"+params.comunityId)
         ]).then(()=>{return {status: Status.Success , message:"Operazione effettuata"}})
     }
 
