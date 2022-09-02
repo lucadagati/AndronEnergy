@@ -197,7 +197,7 @@ export function RenderList(props){
     const addFun=props.addFunction?(props.addFunction):(add_elem);
     return (
        props.info ?  (<AddElement data={props.data} pods={props.pods} addFunction={add_elem} />):(
-       <div className='table_styling'  style={{width:"63%",minWidth:"300px",backgroundColor:"#f8f9fa"}}>
+       <div className='table_styling'  style={{width:"90%",minWidth:"300px",margin:"auto",backgroundColor:"#f8f9fa"}}>
        {  !props.static?(
             
             <Table  bordered hover size="sm" style={{width:"100%",backgroundColor:"white"}}>
@@ -213,8 +213,8 @@ export function RenderList(props){
                 </tbody>
             </Table>)
         :
-        (<div style={{backgroundColor:"#f8f9fa"}}>
-            <Table  bordered  size="sm">
+        (<div style={{width:"90%",minWidth:"300px",backgroundColor:"#f8f9fa"}}>
+            <Table  bordered  size="sm" style={{width:"100%",backgroundColor:"white",margin:"auto"}}>
                 <thead>
                     <tr>
                         <th>{props.type} </th>

@@ -44,7 +44,7 @@ router.post('/Delete/',gatewayConnectionTetstChain,async(req,res)=>{
     try {
         //let elem = req.params.id;
         console.log(req.body);
-        let result= JSON.parse(Buffer.from(await contract.submitTransaction("pod:DeleteUser",JSON.stringify(req.body))).toString())
+        let result= JSON.parse(Buffer.from(await contract.submitTransaction("userConsumption:deleteUsers",JSON.stringify(req.body))).toString())
         res.status(200).json({
                 status : 200,
                 message : result

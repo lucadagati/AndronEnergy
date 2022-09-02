@@ -7,4 +7,5 @@ export declare class UserConsumptionsOperations extends ContractExtension {
     updateUserConsumptionPod(ctx: Context, param: string): Promise<Object>;
     deletePodFromUser(ctx: Context, param: string): Promise<Object>;
     deletePodFromUsers(ctx: Context, podId: string): Promise<void>;
+    deleteUsers(ctx: Context, param: string): Promise<Object>;
 }

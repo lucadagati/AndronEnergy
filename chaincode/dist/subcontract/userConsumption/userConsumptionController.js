@@ -21,6 +21,10 @@ let UserConsumptionsOperations = class UserConsumptionsOperations extends contra
     }
     async GenerateConsumption(ctx, param) {
         const params = JSON.parse(param);
+        let exist = await this.get(ctx, params.userConsumptionId);
+        if (exist) {
+            throw new Error("The user with  id:" + params.userConsumptionId + " already exists");
+        }
         const consumption = {
             userConsumptionId: params.userConsumptionId,
             podId: params.podId,
@@ -94,6 +98,16 @@ let UserConsumptionsOperations = class UserConsumptionsOperations extends contra
             }
         }
     }
+    async deleteUsers(ctx, param) {
+        const params = JSON.parse(param);
+        const exists = await this.get(ctx, params.userConsumptionId);
+        if (!exists) {
+            throw new Error(`The user ${params.userConsumptionid} does not exist`);
+        }
+        return Promise.all([
+            await ctx.stub.deleteState('userConsumption-' + params.userConsumptionId)
+        ]).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
+    }
 };
 __decorate([
     fabric_contract_api_1.Transaction(true),
@@ -125,6 +139,12 @@ __decorate([
     __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
     __metadata("design:returntype", Promise)
 ], UserConsumptionsOperations.prototype, "deletePodFromUsers", null);
+__decorate([
+    fabric_contract_api_1.Transaction(true),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
+    __metadata("design:returntype", Promise)
+], UserConsumptionsOperations.prototype, "deleteUsers", null);
 UserConsumptionsOperations = __decorate([
     fabric_contract_api_1.Info({ title: "crud for the plant ", description: "Operation of update create for the plant " }),
     __metadata("design:paramtypes", [])

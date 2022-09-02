@@ -46,13 +46,14 @@ let ComunityController = class ComunityController extends contractExtension_1.Co
         return JSON.parse(await this.getAll(ctx));
     }
     // DeleteAsset deletes an given asset from the world state.
-    async DeleteComunity(ctx, id) {
-        const exists = await this.get(ctx, 'comunity-' + id);
+    async DeleteComunity(ctx, param) {
+        const params = JSON.parse(param);
+        const exists = await this.get(ctx, params.comunityId);
         if (!exists) {
-            throw new Error(`The comunity ${id} does not exist`);
+            throw new Error(`The comunity ${params.comunityId} does not exist`);
         }
         return Promise.all([
-            await ctx.stub.deleteState('comunity-' + id)
+            await ctx.stub.deleteState("userConsumption-" + params.comunityId)
         ]).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
     async addPodToComunity(ctx, podId, comunityId) {

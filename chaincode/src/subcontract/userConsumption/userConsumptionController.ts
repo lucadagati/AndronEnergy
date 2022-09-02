@@ -12,6 +12,10 @@ export class UserConsumptionsOperations extends ContractExtension{
 @Transaction(true)
 public async GenerateConsumption(ctx:Context,param:string):Promise<Object>{
     const params = JSON.parse(param);
+    let exist:any=await this.get(ctx,params.userConsumptionId);
+    if(exist){
+        throw new Error("The user with  id:"+params.userConsumptionId+" already exists");
+    }
     const consumption= {
         userConsumptionId:params.userConsumptionId,
         podId:params.podId,
@@ -107,7 +111,7 @@ public async deletePodFromUsers(ctx:Context,podId:string):Promise<void>{
             throw new Error(`The user ${params.userConsumptionid} does not exist`);
         }
         return Promise.all([
-        await ctx.stub.deleteState('userConsumption-'+params.userConsumptionid)
+        await ctx.stub.deleteState('userConsumption-'+params.userConsumptionId)
         ]).then(()=>{return {status: Status.Success , message:"Operazione effettuata"}})
         }
 

@@ -91,8 +91,10 @@ function AddElement(props){
             setElem(()=>elem.charAt(0).toUpperCase() + elem.slice(1));
         }
         let res1=props.type.match(reg)? (text_control(elem)) : ("");
-        let res2=comunity?(select_control(comunity,"comunity")):("");
-        let res3=(plant || pod)?(select_control((plant?(plant):(pod)),(plant?('impianto'):('pod')))):("");
+        let res2=comunities?(select_control(comunity,"comunity")):("");
+        let res3=plants?(select_control(plant,"Plant")):("");
+        let res4=pods?(select_control(pod,"Pod")):("");
+
         if(res1.length>0){
             console.log(res1)
             setError(()=>res1);
@@ -106,12 +108,15 @@ function AddElement(props){
             setError3(()=>res3)
             return
         }
+        if(res4.length>0){
+            setError3(()=>res3)
+            return
+        }
         add();
 
     }
     return(
-        <div className='form'style={{marginTop:"40px",height:"auto"}} >
-            <p style={{color:"red"}}>{error}</p>    
+        <div className='form'style={{marginTop:"40px",height:"400px",width:"100%",backgroundColor:"#f8f9fa"}} >
             <Form onSubmit={handleSubmit}>
 
             {props.type.match(reg)?    
@@ -119,6 +124,7 @@ function AddElement(props){
                 <Form.Label>{general.type} Id</Form.Label>
                 <Form.Control type="text"style={{ fontSize: 12, padding: 6,width:"100%" }} placeholder="Nome" 
                     onChange={(event)=>{setError('');setElem(()=>event.target.value)}} value={elem}/>
+                    <p style={{color:"red"}}>{error}</p>    
                 </Form.Group>
                 )
             :
