@@ -120,7 +120,7 @@ export class PodCrudOperations extends ContractExtension{
         const pod:PodStruct={
             type:"pod",
             podId:params.podId,
-            plantIds:[params.plantId],
+            plantIds:[],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
             offgrid:'' ,

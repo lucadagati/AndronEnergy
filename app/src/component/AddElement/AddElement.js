@@ -46,7 +46,7 @@ function AddElement(props){
         console.log(body);
         sections.setLoading(true);
         let result=await props.addFunction(body,auth.auth.accessToken,general.type);
-        if(result.status===200)
+        if(result.status===200||(result[0]?.status===200 && result[1]?.status===200 ))
             window.location.reload();
         else{
             sections.setError(true);
@@ -58,7 +58,7 @@ function AddElement(props){
 
     useEffect(()=>{
         if(props.comunities){
-            //console.log(props.data)
+            console.log(props.comunities)
 
             const selection=()=>{
                 let comunities=props.comunities.map((val)=>{
@@ -76,7 +76,6 @@ function AddElement(props){
             setPlants(()=>plants);  
         }
         if(props.pods){
-            //console.log(props.pods);
             let pods=props.pods.map((val)=>{
                 return <option key={val} value={val}>{val}</option>
             });
@@ -94,7 +93,6 @@ function AddElement(props){
         let res2=comunities?(select_control(comunity,"comunity")):("");
         let res3=plants?(select_control(plant,"Plant")):("");
         let res4=pods?(select_control(pod,"Pod")):("");
-
         if(res1.length>0){
             console.log(res1)
             setError(()=>res1);
@@ -116,7 +114,7 @@ function AddElement(props){
 
     }
     return(
-        <div className='form'style={{marginTop:"40px",height:"400px",width:"100%",backgroundColor:"#f8f9fa"}} >
+        <div className='form'style={{marginTop:"40px",width:"100%",backgroundColor:"#f8f9fa"}} >
             <Form onSubmit={handleSubmit}>
 
             {props.type.match(reg)?    
@@ -142,7 +140,23 @@ function AddElement(props){
                     :
                     (undefined)}
 
-                {plants  ?
+
+
+                {pods  ? 
+                    (<Form.Group>
+                    <Form.Label>Pods</Form.Label>
+                    <Form.Select aria-label="comunities" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError2("");setPod(()=>event.target.value)}} className="mb-3">
+                        <option value="Seleziona">Seleziona</option>
+                        {pods}
+                    </Form.Select>
+                    <p style={{color:"red"}}>{error3}</p> 
+                    </Form.Group>)
+                    :
+                    (undefined)}
+
+
+
+                {plants && props.type!=="pod"  ?
                     (<Form.Group>
                     <Form.Label>Plants</Form.Label>
                     <Form.Select aria-label="plants" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError3("");setPlant(()=>event.target.value)}} className="mb-3">

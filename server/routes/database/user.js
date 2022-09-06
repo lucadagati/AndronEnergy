@@ -66,7 +66,6 @@ router.patch('/activate/:mail',(req,res)=>{
 router.post('/login',(req,res)=>{
     var errors=[];
     const reg=/^[\w&.\-]+$/g;
-    console.log(req.body)
     if (!req.body.password){
         errors.push("No password specified");
         return res.status(400).json({error:errors.join(",")});
@@ -146,7 +145,6 @@ router.post('/login',(req,res)=>{
 
 router.get('/logout',(req,res)=>{
     const cookies=req.cookies;
-    console.log(cookies)
     if(!cookies?.jwt){
         return res.sendStatus(401);
     }

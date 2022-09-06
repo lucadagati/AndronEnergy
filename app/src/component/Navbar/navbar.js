@@ -31,8 +31,8 @@ function Navbar_comunita(){
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto">
+            <Nav.Link href="/comunity">Comunità</Nav.Link>
             <Nav.Link href="/pod">Pod</Nav.Link>
-            <Nav.Link href="/comunity">Comunity</Nav.Link>
             <Nav.Link href="/plant">Plant</Nav.Link>
             <Nav.Link href="/user  ">Consumi utenza</Nav.Link>
         </Nav>

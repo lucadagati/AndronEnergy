@@ -43,13 +43,19 @@ export default function ShowElement(props){
                 get_table(props.type,general,sections,set_data,auth.auth.accessToken,list);
             }
         }
-        else if( prova[0]?.status===200 && prova[1]?.status===200){
+        else if(props.type!=="plant"&& prova[0]?.status===200 && prova[1]?.status===200){
             let list1=prova[0].data.message.map((val)=>val.comunityId)
             general.setComunities(()=>list1);
             let list2=prova[1].data.message.map((val)=>val.plantId)
             //console.log(list);
             general.setPlants(()=>list2);
             get_table(props.type,general,sections,set_data,auth.auth.accessToken,undefined);
+        }
+        else if(props.type==="plant" && prova[0]?.status===200 && prova[1]?.status===200){
+            let list=prova[1].data.message.map((val)=>val.podId);
+            general.setPods(()=>list);
+            get_table(props.type,general,sections,set_data,auth.auth.accessToken,undefined);
+
         } 
         else{
             general.setTable(()=>{})
@@ -67,6 +73,9 @@ export default function ShowElement(props){
         }
         else if(props.type==='userConsumption'){
             request(['pod']);
+        }
+        else if(props.type==='plant'){
+            request(['plant','pod']);
         }
         else{
             get_table(props.type,general,sections,set_data,auth.auth.accessToken,undefined);

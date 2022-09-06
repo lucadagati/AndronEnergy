@@ -54,7 +54,6 @@ function ShowInfo(props){
 
     useEffect(()=>{
         if(props.type==='pod'){
-            // eslint-disable-next-line
             let [plantList,energyData,title]=filter_data(props.elem);
             setPlot(()=><PlotData elem={energyData} type={props.type} title_list={title}/>)
             let table=static_table(plantList,true,title,sections,auth.auth.accessToken,sections.setLoading);
