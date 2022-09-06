@@ -12,11 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserConsumption = void 0;
 const fabric_contract_api_1 = require("fabric-contract-api");
 let UserConsumption = class UserConsumption {
-    constructor(userConsumptionId, podId, consumption) {
+    constructor(userConsumptionId, podId, comunityId, consumption) {
         this.type = "userConsumption";
         this.podId = podId;
         this.userConsumptionId = userConsumptionId;
         this.consumption = consumption;
+        this.comunityId = comunityId;
     }
 };
 __decorate([
@@ -30,6 +31,10 @@ __decorate([
 __decorate([
     fabric_contract_api_1.Property(),
     __metadata("design:type", String)
+], UserConsumption.prototype, "comunityId", void 0);
+__decorate([
+    fabric_contract_api_1.Property(),
+    __metadata("design:type", String)
 ], UserConsumption.prototype, "podId", void 0);
 __decorate([
     fabric_contract_api_1.Property(),
@@ -37,7 +42,7 @@ __decorate([
 ], UserConsumption.prototype, "consumption", void 0);
 UserConsumption = __decorate([
     fabric_contract_api_1.Object(),
-    __metadata("design:paramtypes", [String, String, Array])
+    __metadata("design:paramtypes", [String, String, String, Array])
 ], UserConsumption);
 exports.UserConsumption = UserConsumption;
 //# sourceMappingURL=userDataConsumption.js.map

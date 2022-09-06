@@ -8,13 +8,16 @@ export class UserConsumption{
     @Property()
     public userConsumptionId:string;
     @Property()
+    public comunityId:string;
+    @Property()
     public podId:string;
     @Property()
     public consumption:{"time":number,"consumption":number}[];
     
-    constructor(userConsumptionId:string,podId:string,consumption:{"time":number,"consumption":number}[]){
+    constructor(userConsumptionId:string,podId:string,comunityId:string,consumption:{"time":number,"consumption":number}[]){
         this.podId=podId;
         this.userConsumptionId=userConsumptionId;
         this.consumption=consumption;
+        this.comunityId=comunityId;
     }
 }

@@ -28,6 +28,7 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
                 plantIds: ["Plant2"],
                 exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
                 storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
+                comunityId: "comunity1",
                 type: "pod",
                 offgrid: ''
             },
@@ -36,12 +37,14 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
                 plantIds: ["Plant3", "Plant1"],
                 exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
                 storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
+                comunityId: "comunity1",
                 type: "pod",
                 offgrid: ''
             },
             {
                 podId: "Pod3",
                 plantIds: ["Plant1"],
+                comunityId: "comunity1",
                 exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
                 storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
                 type: "pod",
@@ -49,6 +52,7 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
             },
             {
                 podId: "Pod4",
+                comunityId: "comunity1",
                 plantIds: ["Plant1", "Plant2"],
                 exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
                 storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
@@ -122,14 +126,15 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
         const pod = {
             type: "pod",
             podId: params.podId,
-            plantIds: [params.plantId],
+            comunityId: params.comunityId,
+            plantIds: [],
             exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
             storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
             offgrid: '',
         };
         return Promise.all([
-            await ctx.stub.putState('pod' + '-' + pod.podId, Buffer.from(JSON.stringify(pod))),
-            await comunityClass.addPodToComunity(ctx, params.podId, params.comunityId),
+            await ctx.stub.putState('pod' + '-' + pod.podId, Buffer.from(JSON.stringify(pod)))
+            //await comunityClass.addPodToComunity(ctx,params.podId,params.comunityId),
         ]).then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });
     }
     async updateExchangedEnergy(ctx, id, param) {

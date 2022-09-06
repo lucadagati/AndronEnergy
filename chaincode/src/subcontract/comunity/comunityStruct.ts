@@ -7,11 +7,11 @@ export class ComunityStuct{
     public readonly type: string = "comunity"
     @Property()
     public comunityId:string;
-    @Property()
-    public  podList:string[];
-    constructor(comunityId:string,podList:string[]){
+    //@Property()
+    //public  podList:string[];
+    constructor(comunityId:string){
         this.comunityId=comunityId;
-        this.podList=podList;
+       // this.podList=podList;
     }
 
 }

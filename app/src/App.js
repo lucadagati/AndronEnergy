@@ -18,7 +18,7 @@ function App() {
 
       <Routes>
       <Route path="login" element={<Login />} />        
-      <Route path="/" element={<Navigate to="/pod" />} />
+      <Route path="/" element={<Navigate to="/comunity" />} />
       
       <Route element={<PersistantLogin/>}>
         <Route element={<AuthRequired />}>

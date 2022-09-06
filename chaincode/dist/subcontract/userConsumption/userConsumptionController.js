@@ -28,6 +28,7 @@ let UserConsumptionsOperations = class UserConsumptionsOperations extends contra
         const consumption = {
             userConsumptionId: params.userConsumptionId,
             podId: params.podId,
+            comunityId: params.comunityId,
             consumption: [{ "time": 0, "consumption": 0 }],
             type: 'userConsumption',
         };

@@ -12,13 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PodStruct = void 0;
 const fabric_contract_api_1 = require("fabric-contract-api");
 let PodStruct = class PodStruct {
-    constructor(podId, plantIds, exchangedEnergy, storedEnergy, offgrid) {
+    constructor(podId, plantIds, exchangedEnergy, storedEnergy, offgrid, comunityId) {
         this.type = "pod";
         this.podId = podId;
         this.plantIds = plantIds;
         this.offgrid = offgrid;
         this.exchangedEnergy = exchangedEnergy;
         this.storedEnergy = storedEnergy;
+        this.comunityId = comunityId;
     }
 };
 __decorate([
@@ -29,6 +30,10 @@ __decorate([
     fabric_contract_api_1.Property(),
     __metadata("design:type", String)
 ], PodStruct.prototype, "podId", void 0);
+__decorate([
+    fabric_contract_api_1.Property(),
+    __metadata("design:type", String)
+], PodStruct.prototype, "comunityId", void 0);
 __decorate([
     fabric_contract_api_1.Property(),
     __metadata("design:type", Array)
@@ -47,7 +52,7 @@ __decorate([
 ], PodStruct.prototype, "offgrid", void 0);
 PodStruct = __decorate([
     fabric_contract_api_1.Object(),
-    __metadata("design:paramtypes", [String, Array, Array, Array, String])
+    __metadata("design:paramtypes", [String, Array, Array, Array, String, String])
 ], PodStruct);
 exports.PodStruct = PodStruct;
 //# sourceMappingURL=podStruct.js.map

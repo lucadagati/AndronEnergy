@@ -21,23 +21,9 @@ let ComunityController = class ComunityController extends contractExtension_1.Co
     }
     async CreateComunity(ctx, param) {
         const params = JSON.parse(param);
-        for (const pod of params.pods) {
-            const exist = await this.get(ctx, 'pod' + '-' + pod.Id);
-            if (!exist)
-                throw new Error("The pod with id:" + params.podId + " does not  exists");
-        }
-        const comunities = JSON.parse(await this.getAll(ctx));
-        for (const comunity of comunities) {
-            for (const pod in params.pods) {
-                if (comunity.pods.include(pod)) {
-                    throw new Error("The pod with id:" + params.podId + "is altready used");
-                }
-            }
-        }
         const comunity = {
             type: "comunity",
             comunityId: params.comunityId,
-            podList: params.pods
         };
         await ctx.stub.putState(comunity.type + "-" + comunity.comunityId, Buffer.from(JSON.stringify(comunity)))
             .then(() => { return { status: asset_1.Status.Success, message: "Operazione effettuata" }; });

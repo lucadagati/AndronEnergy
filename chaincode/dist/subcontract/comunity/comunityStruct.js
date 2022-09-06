@@ -12,10 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ComunityStuct = void 0;
 const fabric_contract_api_1 = require("fabric-contract-api");
 let ComunityStuct = class ComunityStuct {
-    constructor(comunityId, podList) {
+    //@Property()
+    //public  podList:string[];
+    constructor(comunityId) {
         this.type = "comunity";
         this.comunityId = comunityId;
-        this.podList = podList;
+        // this.podList=podList;
     }
 };
 __decorate([
@@ -26,13 +28,9 @@ __decorate([
     fabric_contract_api_1.Property(),
     __metadata("design:type", String)
 ], ComunityStuct.prototype, "comunityId", void 0);
-__decorate([
-    fabric_contract_api_1.Property(),
-    __metadata("design:type", Array)
-], ComunityStuct.prototype, "podList", void 0);
 ComunityStuct = __decorate([
     fabric_contract_api_1.Object(),
-    __metadata("design:paramtypes", [String, Array])
+    __metadata("design:paramtypes", [String])
 ], ComunityStuct);
 exports.ComunityStuct = ComunityStuct;
 //# sourceMappingURL=comunityStruct.js.map

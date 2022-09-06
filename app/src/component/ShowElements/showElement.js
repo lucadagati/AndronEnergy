@@ -3,15 +3,17 @@ import { useState } from "react";
 import './showElement.css'
 import { get } from "../../api_call/get_api";
 import Loading from "../Loading/loading";
-import ShowInfo from "./show_info";
+//import ShowInfo from "./show_info";
 import { formatData } from "../../functions/formatData";
 import { get_table } from "../table/table";
 import { RenderList } from "../table/table";
 import useAuth from "../../context/auth/useAuth";
 import Error from "../Error/Error";
-import { add_elem } from "../../api_call/post_api";//potrebbe diventare un hooks
+//import { add_elem } from "../../api_call/post_api";//potrebbe diventare un hooks
 import useGeneral from "../../context/general/useGeneral";
 import useSections from "../../context/auth/sectionFlag/useSections";
+import GenerateTable from "../GenerateTable/GenerateTable";
+
 
 export default function ShowElement(props){
     // eslint-disable-next-line
@@ -19,7 +21,7 @@ export default function ShowElement(props){
     const auth=useAuth();
     const general=useGeneral();
     const sections=useSections();
-
+    const [tableElem,setTableElem]=useState();
 
 
     const set_data=(val)=>{
@@ -31,6 +33,7 @@ export default function ShowElement(props){
         setData(()=>res)
             
     }
+
 
     const request=(async(elements)=>{
         let prova; 
@@ -56,7 +59,14 @@ export default function ShowElement(props){
             general.setPods(()=>list);
             get_table(props.type,general,sections,set_data,auth.auth.accessToken,undefined);
 
-        } 
+        }
+        else if(props.type!=="comunity"&& prova[0]?.status===200 && prova[1]?.status===200){
+            let list=prova[0].data.message.map((val)=>val.podId);
+            general.setPods(()=>list);
+            let list2=prova[1].data.message.map((val)=>val.plantId)
+            general.setUserConsumptions(()=>list2);
+
+        }
         else{
             general.setTable(()=>{})
             sections.setError(()=>true)
@@ -66,7 +76,6 @@ export default function ShowElement(props){
     })
 
     useEffect(()=>{
-
         general.setType(()=>props.type);
         if(props.type==='pod'){   
             request(['comunity','plant']);     
@@ -78,23 +87,24 @@ export default function ShowElement(props){
             request(['plant','pod']);
         }
         else{
+            setTableElem(["pod"])
             get_table(props.type,general,sections,set_data,auth.auth.accessToken,undefined);
+            
         }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[props])
     return (
         
-        general.table && !sections.loading ?(<div className="showElement">
+        <div className="showElement">
                 <h3 style={{textAlign:"center",fontWeight:"300","fontSize": "2.5rem"}}>{props.type.replace(/([A-Z])/g, ' $1').trim().toUpperCase()}</h3>
-                {sections.render&&<RenderList type={props.type}  result={general.table} comunities={general.comunities} plants={general.plants} pods={general.pods} />}
-                {sections.info&&<ShowInfo elem={data} type={props.type} addFunction={add_elem}/>}    
+                {tableElem&&<GenerateTable tableElem={tableElem} type={props.type}/>}
+                {/*sections.render&&<RenderList type={props.type}  result={general.table} comunities={general.comunities} plants={general.plants} pods={general.pods} />}
+                {
+                /*sections.info&&<ShowInfo elem={data} type={props.type} addFunction={add_elem}/>
+                */
+                
+                }    
                 </div>)
-                :(sections.error ?
-                    (<Error/>)
-                    :
-                    (<Loading type={props.type}/>)
-                )
-                    
-        );
+
 }
