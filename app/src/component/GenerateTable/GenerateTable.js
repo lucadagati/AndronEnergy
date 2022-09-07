@@ -26,6 +26,7 @@ export default function GenerateTable(props){
                 var elem=result[0].data.message.map((val,key)=>{
                     return (
                         <tr key={"normal"+key}>
+                            {console.log(key)}
                             <td key={"normal"+key+"name"} style={{"cursor":"pointer"}} onClick={()=>{}}>
                                 {val[props.tableElem[0]+"Id"]}
                             </td>
@@ -38,7 +39,7 @@ export default function GenerateTable(props){
                 })
             
             table=[...table,
-                (<Table  bordered hover size="sm" style={{width:"70%",backgroundColor:"white"}}>
+                (<Table key="feijf" bordered hover size="sm" style={{width:"70%",backgroundColor:"white"}}>
                     <thead>
                         <tr>
                             <th> {props.tableElem[0]} Id</th>
@@ -63,7 +64,7 @@ export default function GenerateTable(props){
     },[])
 
     return (
-        <div style={{width:"70%",margin:"auto"}}>
+        <div key="prova"style={{width:"70%",margin:"auto"}}>
             {table?(table):(undefined)}
         </div>
         
