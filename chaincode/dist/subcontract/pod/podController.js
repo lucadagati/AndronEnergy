@@ -122,7 +122,7 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
         const pod = {
             type: "pod",
             podId: params.podId,
-            plantIds: [params.plantId],
+            plantIds: [],
             exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
             storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
             offgrid: '',

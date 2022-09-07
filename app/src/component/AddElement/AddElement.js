@@ -142,7 +142,8 @@ function AddElement(props){
 
 
 
-                {pods  ? 
+                {
+                /*pods  ? 
                     (<Form.Group>
                     <Form.Label>Pods</Form.Label>
                     <Form.Select aria-label="comunities" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError2("");setPod(()=>event.target.value)}} className="mb-3">
@@ -152,7 +153,8 @@ function AddElement(props){
                     <p style={{color:"red"}}>{error3}</p> 
                     </Form.Group>)
                     :
-                    (undefined)}
+                    (undefined)*/
+                }
 
 
 
@@ -169,7 +171,7 @@ function AddElement(props){
                     (undefined)
                 }
 
-                {general.type==='userConsumption' ?
+                {general.type==='userConsumption' || pods ?
                         (<Form.Group>
                             <Form.Label>Pods</Form.Label>
                             <Form.Select aria-label="pods" style={{ fontSize: 12, padding: 6,width:"100%" }} onChange={(event)=>{setError3("");setPod(()=>event.target.value)}} className="mb-3">
