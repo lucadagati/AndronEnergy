@@ -25,13 +25,13 @@ let db= new sqlite3.Database(DBSOURCE,(err)=>{
                 if(err){
                     console.log(err);
                 }
-                else{
-                    var insert = 'INSERT INTO user (email,username, password) VALUES (?,?,?)'
-                    db.run(insert, ["paonelucio97@gmail.com",'admin',bcrypt.hashSync("blodines2",10)])
+                else{*/
+                    /*var insert = 'INSERT INTO user (email,username, password) VALUES (?,?,?)'
+                    db.run(insert, ["michelearena46@gmail.com",'device',bcrypt.hashSync("Uncharted3",10)])
                     //db.run(insert, ["user","user@example.com",md5("user123456")])
                 }
             
-            })
+        /*    })
         db.run(`CREATE TABLE token (
             token_data TEXT NOT NULL,
             username text PRIMARY KEY,
@@ -41,7 +41,8 @@ let db= new sqlite3.Database(DBSOURCE,(err)=>{
                         console.log(err);
                     }  
             })*/
+        }
     }
-})
+)
 
 module.exports=db;
