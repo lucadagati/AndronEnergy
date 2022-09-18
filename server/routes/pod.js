@@ -96,6 +96,49 @@ router.post('/removePlantfromPod',gatewayConnectionTetstChain,async(req,res)=>{
     }
 })
 
+router.post('/removeComunity',gatewayConnectionTetstChain,async(req,res)=>{
+    try{       
+        let result= JSON.parse(Buffer.from(await contract.submitTransaction("pod:podRemoveComunity",JSON.stringify(req.body))).toString())
+        res.status(200).json({
+            status : 200,
+            message : result
+        });
+    }
+    
+    catch (error) {
+        console.error(`Failed to evaluate transaction: ${error}`);
+        res.status(500).json({status: "error", message: error});
+    }
+
+    finally{
+        await gateway.disconnect();
+    }
+})
+
+
+router.post('/updateComunity',gatewayConnectionTetstChain,async(req,res)=>{
+    try{       
+        let result= JSON.parse(Buffer.from(await contract.submitTransaction("pod:podUpdateComunity",JSON.stringify(req.body))).toString())
+        res.status(200).json({
+            status : 200,
+            message : result
+        });
+    }
+    
+    catch (error) {
+        console.error(`Failed to evaluate transaction: ${error}`);
+        res.status(500).json({status: "error", message: error});
+    }
+
+    finally{
+        await gateway.disconnect();
+    }
+})
+
+
+
+
+
 router.post('/updatePodPlant/',async(req,res)=>{
     try{
         console.log(JSON.stringify(req.body));

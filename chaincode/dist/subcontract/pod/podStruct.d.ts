@@ -1,6 +1,7 @@
 export declare class PodStruct {
     readonly type: string;
     podId: string;
+    comunityId: string;
     plantIds: string[];
     exchangedEnergy: {
         "time": number;

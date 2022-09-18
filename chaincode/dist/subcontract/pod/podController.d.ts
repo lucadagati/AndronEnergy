@@ -10,6 +10,8 @@ export declare class PodCrudOperations extends ContractExtension {
     private generatePodObj;
     DeletePod(ctx: Context, param: string): Promise<Object>;
     podUpdatePlant(ctx: Context, param: string): Promise<Object>;
+    podUpdateComunity(ctx: Context, param: string): Promise<Object>;
+    podRemoveComunity(ctx: Context, param: string): Promise<Object>;
     removePlantfromPod(ctx: Context, param: string): Promise<Object>;
     removePlantfromPods(ctx: Context, pods: string[], plantId: string): Promise<void>;
 }

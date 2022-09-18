@@ -31,6 +31,10 @@ __decorate([
 ], PodStruct.prototype, "podId", void 0);
 __decorate([
     fabric_contract_api_1.Property(),
+    __metadata("design:type", String)
+], PodStruct.prototype, "comunityId", void 0);
+__decorate([
+    fabric_contract_api_1.Property(),
     __metadata("design:type", Array)
 ], PodStruct.prototype, "plantIds", void 0);
 __decorate([

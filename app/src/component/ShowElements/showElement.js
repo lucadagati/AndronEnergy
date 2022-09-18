@@ -49,7 +49,7 @@ export default function ShowElement(props){
             let list2=prova[1].data.message.map((val)=>val.plantId)
             //console.log(list);
             general.setPlants(()=>list2);
-            get_table(props.type,general,sections,set_data,auth.auth.accessToken,undefined);
+            get_table(props.type,general,sections,set_data,auth.auth.accessToken,list1);
         } 
         else{
             general.setTable(()=>{})

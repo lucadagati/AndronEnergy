@@ -1,4 +1,4 @@
-import { get } from "../../api_call/get_api";
+/*import { get } from "../../api_call/get_api";
 import { delete_elem } from "../../api_call/post_api";
 import { ReactComponent as Trash} from'../../trash.svg';
 import { ReactComponent as Add} from'../../add.svg';
@@ -13,8 +13,6 @@ import { updateUserPod } from "../../api_call/userConsumption_api";
 import { add_elem } from "../../api_call/post_api";
 import useGeneral from "../../context/general/useGeneral";
 import useSections from "../../context/auth/sectionFlag/useSections";
-import { updatePodComunity } from "../../api_call/pod_api";
-import { removePodComunity } from "../../api_call/pod_api";
 
 export async function remove_data_from_table(type,id,setFunction,token,sections){
         //setFunction(()=>undefined);
@@ -34,45 +32,9 @@ export async function remove_data_from_table(type,id,setFunction,token,sections)
         }
 
 
-async function api_function(obj, ...args){
-    if(obj['select']===undefined && args[2]==='add'){
-        //args[1].setLoading(false);
-        //args[1].setError(true);
-        //args[1].setErrorMessage("Seleziona un elemento");
-        return
-    }
-    else{
-        args[1].setLoading(true);
-        let result=args[2]==='remove'?
-            (
-                args[3]==='userConsumption'?
-                (await removeUserPod(obj,args[0]))
-                :
-                (await removePodComunity(obj,args[0]))
-            )
-            :
-            (
-                args[3]!=='pod'?
-                ( await updateUserPod( { podId:obj['select'],userConsumptionId:obj.userConsumptionId },args[0]))
-                :
-                (await updatePodComunity( { comunityId:obj['select'],podId:obj.podId } ,args[0]))
-            );
-        if(result.status===200)
-            window.location.reload();
-        else{
-            args[1].setLoading(false);
-            args[1].setError(true);
-            args[1].setErrorMessage(result.error);
+export async function get_table(type,general,sections,set_data,token,pods){
 
-        }
-    }
-}
-
-
-
-export async function get_table(type,general,sections,set_data,token,elem){
-
-        /*async function updateUser(user){
+        async function updateUser(user){
             console.log(elemSelect)
             let regex=/Pod/g;
             if(elemSelect!==undefined && elemSelect.match(regex)){
@@ -94,13 +56,13 @@ export async function get_table(type,general,sections,set_data,token,elem){
             }
             else return;
 
-        }*/
+        }
         let elemSelect=undefined;
         let getArray=[type];
         if(type==='userConsumption'){
             getArray.push('userConsumption');
         }
-        let podsSelect=elem?.map((val)=>{
+        let podsSelect=pods?.map((val)=>{
             return <option key={val} value={val}>{val}</option>
         });
         const search_pattern=(type,elem)=>{
@@ -117,21 +79,34 @@ export async function get_table(type,general,sections,set_data,token,elem){
                 .then(
                     res=>{
                         if(!res.error){
+                            console.log(res[0].data.message)
                             let table_fields=res[0].data.message.map((val,key)=>{
                                 return (
                                     <tr key={key}>
                                         <td key={key+"name"} style={{"cursor":"pointer"}} onClick={()=>{set_data(val)}}>
                                             {val[type+"Id"]}
                                         </td>
-                                    {type==='userConsumption' || type==='pod'? 
+                                    {type==='userConsumption'? 
                                             (<td key={key+"namePod"}>
                                                     {
-                                                    val[ (type==='pod'?('comunityId'):('podId')) ]
+                                                    val['podId']
                                                     ?
                                                     (<div className="container" style={{display:"flex",flexDirection:"row",marginLeft:"10px"}}>
                                                         <div>
-                                                        {val[(type==='pod'?('comunityId'):('podId'))]}
-                                                        <button style={{padding:"0",border:"none",background:"none",marginLeft:"10px"}}type="button" onClick={()=>api_function({podId:val['podId'],userConsumptionId:val[type+'Id']},token,sections,'remove',type)}> 
+                                                        {val['podId']}
+                                                        <button style={{padding:"0",border:"none",background:"none",marginLeft:"10px"}}type="button" onClick={async()=>{let body={podId:val['podId'],userConsumptionId:val[type+'Id']}
+                                                        sections.setLoading(true);
+                                                        let result=await removeUserPod(body,token);
+                                                        if(result.status===200)
+                                                            window.location.reload();
+                                                        else{
+                                                            sections.setLoading(false);
+                                                            sections.setError(true);
+                                                            sections.setErrorMessage(result.error);
+
+                                                        }
+                                                        //setTable(()=>undefined);
+                                                        }}> 
                                                             <Minus style={{width:"20px",height:"20px"}}/>
                                                         </button>
                                                         </div>
@@ -150,7 +125,7 @@ export async function get_table(type,general,sections,set_data,token,elem){
                                                             </Form.Select>
                                                         </div>
                                                         <div style={{marginLeft:"20px",width:"40%"}}>
-                                                            <button type="button" style={{padding:"0",border:"none",background:"none"}} onClick={()=>{ let obj={}; obj[type+'Id']=val[type+'Id'];obj['select']=elemSelect; api_function(obj,token,sections,'add',type) } }> 
+                                                            <button type="button" style={{padding:"0",border:"none",background:"none"}} onClick={()=>{updateUser(val[type+'Id'])}}> 
                                                                 <Add style={{width:"20px",height:"20px"}}/>
                                                             </button>
                                                         </div>
@@ -230,7 +205,7 @@ export function RenderList(props){
                 <thead>
                     <tr>
                         <th>{capitalize(props.type.replace(/([A-Z])/g, ' $1').trim())} Id</th>
-                        {props.type==='userConsumption'||props.type==='pod'?(<th>{capitalize(props.type.replace(/([A-Z])/g, ' $1').trim())} Pods</th>):(undefined)}
+                        {props.type==='userConsumption'?(<th>{capitalize(props.type.replace(/([A-Z])/g, ' $1').trim())} Pods</th>):(undefined)}
                         {!props.static && <th>Rimuovi {general.type==="userConsumption"?("User"):(undefined)}</th>}
                     </tr>
                 </thead>
@@ -266,4 +241,4 @@ export function RenderList(props){
         
         ) 
     
-}
+}*/

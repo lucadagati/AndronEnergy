@@ -1,10 +1,10 @@
+import { ComunityController } from './../comunity/comunityController';
 import { PlantOperations } from './../podPlant/plantCrontroller';
 import { UserConsumptionsOperations } from './../userConsumption/userConsumptionController';
 import { Status } from '../../utility/asset';
 import { Context,Info,Transaction } from "fabric-contract-api";
 import { PodStruct } from "./podStruct";
 import { ContractExtension } from '../../utility/contractExtension';
-import { ComunityController } from '../comunity/comunityController';
 
 @Info({title:"crud for the pod ", description:"Operation of update create for the pod "})
 
@@ -20,6 +20,7 @@ export class PodCrudOperations extends ContractExtension{
         [
             {
             podId:"Pod1",
+            comunityId:"Comunity1",
             plantIds:["Plant2"],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
@@ -28,6 +29,7 @@ export class PodCrudOperations extends ContractExtension{
 
             {
             podId:"Pod2",
+            comunityId:"Comunity1",
             plantIds:["Plant3","Plant1"],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
@@ -36,6 +38,7 @@ export class PodCrudOperations extends ContractExtension{
 
             {
             podId:"Pod3",
+            comunityId:"Comunity1",
             plantIds:["Plant1"],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
@@ -43,6 +46,7 @@ export class PodCrudOperations extends ContractExtension{
             offgrid:'' },
             {
             podId:"Pod4",
+            comunityId:"Comunity1",
             plantIds:["Plant1","Plant2"],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
@@ -119,8 +123,9 @@ export class PodCrudOperations extends ContractExtension{
         }
         const pod:PodStruct={
             type:"pod",
+            comunityId:params.comunityId,
             podId:params.podId,
-            plantIds:[params.plantId],
+            plantIds:[],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
             offgrid:'' ,
@@ -256,7 +261,41 @@ export class PodCrudOperations extends ContractExtension{
             }
 
     }
+    @Transaction()
+    public async podUpdateComunity(ctx:Context,param:string): Promise<Object> {
+        const params=JSON.parse(param);
+        const comunityClass=new ComunityController();
+        const exist:any=await this.get(ctx,params.podId);
+        const comunity:any=await comunityClass.get(ctx,params.comunityId);
+        if(!comunity){
+            throw new Error(`The comunity ${comunity.comunityId} does not exist`);
+        }
+        else if(!exist){
+            throw new Error(`The pod ${exist.podId} does not exist`);
+        }
+        else{
+            exist.comunityId=params.comunityId;
+            comunityClass.addPodToComunity(ctx,params.podId,params.comunityId)
+            return Promise.all([await ctx.stub.putState('pod-'+exist.podId,Buffer.from(JSON.stringify(exist)))])
+                .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
+            }
+    }
 
+    @Transaction()
+    public async podRemoveComunity(ctx:Context,param:string): Promise<Object> {
+        const params=JSON.parse(param);
+        const comunityClass=new ComunityController();
+        const exist:any=await this.get(ctx,params.podId);
+        if(!exist){
+            throw new Error(`The pod ${exist.podId} does not exist`);
+        }
+        else{
+            exist.comunityId=undefined;
+            comunityClass.DeletePodFromComunity(ctx,exist.podId,exist.comunityId)
+            return Promise.all([await ctx.stub.putState('pod-'+exist.podId,Buffer.from(JSON.stringify(exist)))])
+                .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
+            }
+    }
 
     @Transaction()
     public async removePlantfromPod(ctx:Context,param:string):Promise<Object>{

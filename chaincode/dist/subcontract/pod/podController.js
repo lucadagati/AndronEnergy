@@ -10,12 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PodCrudOperations = void 0;
+const comunityController_1 = require("./../comunity/comunityController");
 const plantCrontroller_1 = require("./../podPlant/plantCrontroller");
 const userConsumptionController_1 = require("./../userConsumption/userConsumptionController");
 const asset_1 = require("../../utility/asset");
 const fabric_contract_api_1 = require("fabric-contract-api");
 const contractExtension_1 = require("../../utility/contractExtension");
-const comunityController_1 = require("../comunity/comunityController");
 let PodCrudOperations = class PodCrudOperations extends contractExtension_1.ContractExtension {
     constructor() {
         //do un nome al contratto che ho creato per distinguerlo dagli altri
@@ -25,6 +25,7 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
         const pod = [
             {
                 podId: "Pod1",
+                comunityId: "Comunity1",
                 plantIds: ["Plant2"],
                 exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
                 storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
@@ -33,6 +34,7 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
             },
             {
                 podId: "Pod2",
+                comunityId: "Comunity1",
                 plantIds: ["Plant3", "Plant1"],
                 exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
                 storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
@@ -41,6 +43,7 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
             },
             {
                 podId: "Pod3",
+                comunityId: "Comunity1",
                 plantIds: ["Plant1"],
                 exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
                 storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
@@ -49,6 +52,7 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
             },
             {
                 podId: "Pod4",
+                comunityId: "Comunity1",
                 plantIds: ["Plant1", "Plant2"],
                 exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
                 storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
@@ -121,8 +125,9 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
         }
         const pod = {
             type: "pod",
+            comunityId: params.comunityId,
             podId: params.podId,
-            plantIds: [params.plantId],
+            plantIds: [],
             exchangedEnergy: [{ "time": 0, "exchangedEnergy": 0 }],
             storedEnergy: [{ "time": 0, "storedEnergy": 0 }],
             offgrid: '',
@@ -242,6 +247,38 @@ let PodCrudOperations = class PodCrudOperations extends contractExtension_1.Cont
             }
         }
     }
+    async podUpdateComunity(ctx, param) {
+        const params = JSON.parse(param);
+        const comunityClass = new comunityController_1.ComunityController();
+        const exist = await this.get(ctx, params.podId);
+        const comunity = await comunityClass.get(ctx, params.comunityId);
+        if (!comunity) {
+            throw new Error(`The comunity ${comunity.comunityId} does not exist`);
+        }
+        else if (!exist) {
+            throw new Error(`The pod ${exist.podId} does not exist`);
+        }
+        else {
+            exist.comunityId = params.comunityId;
+            comunityClass.addPodToComunity(ctx, params.podId, params.comunityId);
+            return Promise.all([await ctx.stub.putState('pod-' + exist.podId, Buffer.from(JSON.stringify(exist)))])
+                .then(() => { return { status: asset_1.Status.Success, message: "Operazione effetuata" }; });
+        }
+    }
+    async podRemoveComunity(ctx, param) {
+        const params = JSON.parse(param);
+        const comunityClass = new comunityController_1.ComunityController();
+        const exist = await this.get(ctx, params.podId);
+        if (!exist) {
+            throw new Error(`The pod ${exist.podId} does not exist`);
+        }
+        else {
+            exist.comunityId = undefined;
+            comunityClass.DeletePodFromComunity(ctx, exist.podId, exist.comunityId);
+            return Promise.all([await ctx.stub.putState('pod-' + exist.podId, Buffer.from(JSON.stringify(exist)))])
+                .then(() => { return { status: asset_1.Status.Success, message: "Operazione effetuata" }; });
+        }
+    }
     async removePlantfromPod(ctx, param) {
         const params = JSON.parse(param);
         const plantClass = new plantCrontroller_1.PlantOperations();
@@ -320,6 +357,18 @@ __decorate([
     __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
     __metadata("design:returntype", Promise)
 ], PodCrudOperations.prototype, "podUpdatePlant", null);
+__decorate([
+    fabric_contract_api_1.Transaction(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
+    __metadata("design:returntype", Promise)
+], PodCrudOperations.prototype, "podUpdateComunity", null);
+__decorate([
+    fabric_contract_api_1.Transaction(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [fabric_contract_api_1.Context, String]),
+    __metadata("design:returntype", Promise)
+], PodCrudOperations.prototype, "podRemoveComunity", null);
 __decorate([
     fabric_contract_api_1.Transaction(),
     __metadata("design:type", Function),

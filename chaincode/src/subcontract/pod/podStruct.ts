@@ -8,6 +8,8 @@ export class PodStruct{
     @Property()
     public podId:string;
     @Property()
+    public comunityId:string
+    @Property()
     public plantIds:string[]
     @Property()
     public exchangedEnergy:{"time":number,"exchangedEnergy":number}[];
