@@ -20,6 +20,7 @@ export class PlantOperations extends ContractExtension{
             }
         const plant= {
             plantId:params.plantId,
+            podId:undefined,
             generatedEnergy:[{"time":0,"consumption":0}],
             type:'plant',
             };
@@ -71,5 +72,47 @@ export class PlantOperations extends ContractExtension{
             await ctx.stub.deleteState('plant-'+params.plantId)
            ]).then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});
         }
+
+        @Transaction()
+    public async addPodtoPlant(ctx:Context,param:string): Promise<Object> {
+        const params=JSON.parse(param);
+        const podClass = new PodCrudOperations();
+        const pod:any=await podClass.get(ctx,params.podId);
+        const plant:any = await this.get(ctx,params.plantId)as PlantStruct;
+        if(plant.plantId==undefined){
+            throw new Error("The plant  with id:"+plant.plantId+" does not exists");
+        }
+        else if(pod.podId===undefined){
+            throw new Error("The pod  with id:"+plant.plantId+" does not exists");
+        }
+        plant.podId=params.podId;
+        const obj=JSON.stringify({podId:params.podId,plantId:params.plantid});
+        podClass.podUpdatePlant(ctx,obj);
+        return Promise.all([ await ctx.stub.putState(plant.type+"-"+plant.plantId,Buffer.from(JSON.stringify(plant)))])
+            .then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});
+
+    }
+
+
+    @Transaction()
+    public async removePodfromPlant(ctx:Context,param:string): Promise<Object> {
+        const params=JSON.parse(param);
+        const podClass = new PodCrudOperations();
+        const pod:any=await podClass.get(ctx,params.podId);
+        const plant:any = await this.get(ctx,params.plantId)as PlantStruct;
+        if(plant.plantId==undefined){
+            throw new Error("The plant  with id:"+plant.plantId+" does not exists");
+        }
+        else if(pod.podId===undefined){
+            throw new Error("The pod  with id:"+plant.plantId+" does not exists");
+        }
+        plant.podId=undefined;
+        const obj=JSON.stringify({podId:params.podId,platnId:params.plantId});
+        podClass.removePlantfromPod(ctx,obj);
+        return Promise.all([ await ctx.stub.putState(plant.type+"-"+plant.plantId,Buffer.from(JSON.stringify(plant)))])
+            .then(()=> {return {status: Status.Success , message:"Operazione effettuata"}});
+
+    }
+    
 
 }

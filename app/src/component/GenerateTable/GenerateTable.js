@@ -1,5 +1,5 @@
 import useGeneral from "../../context/general/useGeneral";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import useAuth from "../../context/auth/useAuth";
 import { get } from "../../api_call/get_api";
 import { ReactComponent as Trash} from'../../trash.svg';
@@ -167,4 +167,30 @@ export  function GenerateUserSpecialTable(props){
             {table}
         </div>
     )
+}
+
+
+////COME CHIAMARE UNA FUNZIONE ASYNC
+export  function GenerateUserSpecialTable(props){
+
+    const [data,setData]=useState();
+
+    const get_data=useCallback( async (params)=>{
+        let result=await get(params);
+        setData(()=>result)
+    });
+
+
+    useEffect(()=>{
+        
+        get_data(props.elem)
+        
+    },[get_data])
+
+return (
+    <div>
+        <Loading></Loading>
+    </div>
+    
+)
 }

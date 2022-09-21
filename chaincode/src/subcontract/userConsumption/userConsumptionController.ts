@@ -63,6 +63,8 @@ public async updateUserConsumptionPod(ctx:Context,param:string):Promise<Object>{
     }
     else{
         exist.podId=params.podId;
+        const obj={userConsumptionId:params.userConsumptionId};
+        podClass.podUpdateUsers(ctx,JSON.stringify(obj));
         return Promise.all([await ctx.stub.putState('userConsumption-'+exist.userConsumptionId,Buffer.from(JSON.stringify(exist)))])
             .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
 
@@ -72,13 +74,20 @@ public async updateUserConsumptionPod(ctx:Context,param:string):Promise<Object>{
 @Transaction(true)
 public async deletePodFromUser(ctx:Context,param:string):Promise<Object>{
         const params = JSON.parse(param);
+        const podClass=new PodCrudOperations();
+        const pod=await podClass.get(ctx,params.podId)
         let exist:any =await this.get(ctx,params.userConsumptionId);
         if(!exist){
             throw new Error("The user with  id:"+params.userConsumptionId+" does not exists");
         }
+        else if(!pod){
+            throw new Error("The pod with  id:"+params.userConsumptionId+" does not exists");
+        }
         else{
             if(exist.podId===params.podId){
                     exist.podId="";
+                    const obj={userConsumptionId:params.userConsumptionId};
+                    podClass.podDeleteUsers(ctx,JSON.stringify(obj));
                     return Promise.all([await ctx.stub.putState('userConsumption-'+exist.userConsumptionId,Buffer.from(JSON.stringify(exist)))])
                         .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
                 }
@@ -99,8 +108,6 @@ public async deletePodFromUsers(ctx:Context,podId:string):Promise<void>{
                 user.podId="";
                 await ctx.stub.putState('userConsumption-'+user.userConsumptionId,Buffer.from(JSON.stringify(user)))
             }
-        
-
         }
     }
 

@@ -21,6 +21,7 @@ export class PodCrudOperations extends ContractExtension{
             {
             podId:"Pod1",
             plantIds:["Plant2"],
+            userConsumptionIds:[],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
             comunityId:"comunity1",
@@ -30,6 +31,7 @@ export class PodCrudOperations extends ContractExtension{
             {
             podId:"Pod2",
             plantIds:["Plant3","Plant1"],
+            userConsumptionIds:[],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
             comunityId:"comunity1",
@@ -39,6 +41,7 @@ export class PodCrudOperations extends ContractExtension{
             {
             podId:"Pod3",
             plantIds:["Plant1"],
+            userConsumptionIds:[],
             comunityId:"comunity1",
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
@@ -47,6 +50,7 @@ export class PodCrudOperations extends ContractExtension{
             {
             podId:"Pod4",
             comunityId:"comunity1",
+            userConsumptionIds:[],
             plantIds:["Plant1","Plant2"],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
@@ -125,6 +129,7 @@ export class PodCrudOperations extends ContractExtension{
             type:"pod",
             podId:params.podId,
             comunityId:params.comunityId,
+            userConsumptionIds:[],
             plantIds:[],
             exchangedEnergy:[{"time":0,"exchangedEnergy":0}],
             storedEnergy:[{"time":0,"storedEnergy":0}],
@@ -255,6 +260,8 @@ export class PodCrudOperations extends ContractExtension{
                 return {status:Status.Success,message:"Operazione effetuata"}
             else{
                 exist.plantIds=exist.plantIds.concat(params.plantId);
+                const obj={podId:params.podId,plantId:params.plantId};
+                plant.addPodtoPlant(ctx,JSON.stringify(obj));
                 return Promise.all([await ctx.stub.putState('pod-'+exist.podId,Buffer.from(JSON.stringify(exist)))])
                 .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
                 }
@@ -276,6 +283,8 @@ export class PodCrudOperations extends ContractExtension{
             throw new Error(`The plant ${exist.podId} does not exist`);
         }
         else{
+            const obj={podId:params.podId,plantId:params.plantId};
+            plant.removePodfromPlant(ctx,JSON.stringify(obj));
             exist.plantIds=exist.plantIds.filter((elem:String)=>elem!==params.plantId);
             return Promise.all([await ctx.stub.putState('pod-'+exist.podId,Buffer.from(JSON.stringify(exist)))])
                 .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
@@ -285,7 +294,6 @@ export class PodCrudOperations extends ContractExtension{
 
     @Transaction()
     public async removePlantfromPods(ctx:Context,pods:string[],plantId:string):Promise<void>{
-
         for(let i=0;i< pods.length; i++ ){
             var exists:any= await this.get(ctx, pods[i]);
             if (!exists) {
@@ -298,5 +306,57 @@ export class PodCrudOperations extends ContractExtension{
         }
 
     }
+
+    
+    @Transaction()
+    public async podUpdateUsers(ctx:Context,param:string): Promise<Object> {
+        const params=JSON.parse(param);
+        const userClass=new UserConsumptionsOperations();
+        const exist:any=await this.get(ctx,params.podId);
+        const user:any=await userClass.get(ctx,params.userConsumptionId);
+        if(!user){
+            throw new Error(`The user ${user.userConsumptionId} does not exist`);
+        }
+        else if(!exist){
+            throw new Error(`The pod ${exist.podId} does not exist`);
+        }
+        else{
+            if(exist.userConsumptionIds.indexOf(params.userConsumptionId)!==-1)
+                return {status:Status.Success,message:"Operazione effetuata"}
+            else{
+                exist.userConsumptionIds=exist.userConsumptionIds.concat(params.userConsumptionId);
+                return Promise.all([await ctx.stub.putState('pod-'+exist.podId,Buffer.from(JSON.stringify(exist)))])
+                .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
+                }
+            }
+
+    }
+
+    @Transaction()
+    public async podDeleteUsers(ctx:Context,param:string): Promise<Object> {
+        const params=JSON.parse(param);
+        const userClass=new UserConsumptionsOperations();
+        const exist:any=await this.get(ctx,params.podId);
+        const user:any=await userClass.get(ctx,params.userConsumptionId);
+        if(!user){
+            throw new Error(`The user ${user.userConsumptionId} does not exist`);
+        }
+        else if(!exist){
+            throw new Error(`The pod ${exist.podId} does not exist`);
+        }
+        else{
+            if(exist.userConsumptionIds.indexOf(params.userConsumptionId)!==-1)
+                return {status:Status.Success,message:"Operazione effetuata"}
+            else{
+                exist.userConsumptionIds=exist.userConsumptionIds.filter((elem:string)=>elem!==params.userConsumptionId);
+                return Promise.all([await ctx.stub.putState('pod-'+exist.podId,Buffer.from(JSON.stringify(exist)))])
+                    .then(()=>{return {status:Status.Success,message:"Operazione effetuata"}});
+                }
+            }
+
+    }
+
+
+
 
 }
